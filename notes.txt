@@ -1,0 +1,16 @@
+
+--- Initial Setup
+	Which ports / drives should be evidence only (read only) ?
+
+--- Acquisition
+	1. File (Copy and Hash Individual Files).
+	3. Partition (Image / Hash partition).
+	2. Disc (Image / Hash Entire disc).
+
+	A. CD/DVD
+	B. USB Drive
+
+--- Verify
+
+
+

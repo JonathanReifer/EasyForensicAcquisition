@@ -1,0 +1,15 @@
+
+1. Main 
+Choose :
+- Settings
+- Acquire
+- Verify
+
+2. Settings
+ ---TODO
+
+3. Acquire
+
+
+
+

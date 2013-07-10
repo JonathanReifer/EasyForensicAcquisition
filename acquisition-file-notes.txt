@@ -1,0 +1,17 @@
+
+Acquisition : File Workflow:
+
+
+1. Select Evidence to Process.
+
+2. Choose: ( Hash Only ) or ( Copy and Hash ).
+
+3. Select Export medium (CD/DVD or USB Drive).
+
+4. Allow user to enter meta data (Case #, Name).
+
+5. Display Results.
+
+
+
+
