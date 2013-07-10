@@ -1,4 +1,11 @@
 
+need to have express & ejs installed :
+$ npm install express
+$ npm install ejs
+
+
+
+
 --- Initial Setup
 	Which ports / drives should be evidence only (read only) ?
 
