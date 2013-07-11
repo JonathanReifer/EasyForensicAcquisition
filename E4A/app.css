@@ -60,3 +60,13 @@ html, body {
 #myapp.claro .mmButton.dijitDropDownButton .dijitButtonNode {
     width : 200px;
 }
+#myapp.claro .mmContentPane.dijitContentPane {
+    width : 100%;
+    height : 100%;
+    background-color : black;
+}
+#myapp.claro .mmH1 {
+    background-color : black;
+    color : white;
+    text-align : center;
+}
