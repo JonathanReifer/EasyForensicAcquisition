@@ -1,21 +1,6 @@
 
 <% include header.html %>
 
-<!-- BEGIN mainSelection VIEW -->
- <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="display: none;" class="mmContentPane" data-maq-deltas="{'MainMenu':{'style':[{'display':''}]},'AcquireMenu':{'style':[{'display':'none'}]}}">
- <h1 style="top: 41px; text-align: center; position: relative;" class="mmH1">
-   Welcome to<br>
-     Easy Forensic Acquisition<br>
-       Please choose from the following:</br>
-   </br>
- </h1>
- <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Acquire" iconClass="dijitNoIcon" style="position: fixed; top: 175px;" class="mmButton" onclick="davinci.states.setState('AcquireMenu')"></input>
-   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Verify" iconClass="dijitNoIcon" style="position: fixed; top: 300px;" class="mmButton"></input>
-   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Settings" iconClass="dijitNoIcon" style="position: fixed; top: 425px;" class="mmButton"></input>
- </div>
-<!-- END mainSelection VIEW -->
-
-<!-- BEGIN selectEvidence VIEW -->
  <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; width: 100%; height: 100%;" doLayout="false" class="mmContentPane">
   <h1 style="top: 64px; position: relative;" class="mmH1">
     Acquire Evidence<br></br>Select Evidence to Process :</h1>
@@ -48,9 +33,6 @@
 
   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="left: 70%; top: 70%; position: absolute; z-index: 900;" class="mmButton" onclick="davinci.states.setState('MainMenu')"></input>
 </div>
-<!-- END selectEvidence VIEW -->
-
-
 
 
 

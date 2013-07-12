@@ -25,17 +25,36 @@ var messages = [
   { name: 'Dr. Rockso', message: 'Where is my friend Toki?' }
 ];
 
+var evidenceMediaPath = "../testEvidenceDir";
+var writeableMediaPath = "../testWriteableMediaDir";
+
 var evidenceMediaList = []; 
 var writeableMediaList = []; 
+writeableMediaList = fs.readdirSync(writeableMediaPath );
 
  
 // Serve the index page
 app.get('/', function(req, res){
   res.render('index', {
-    pageTitle: 'EJS Demo',
+    pageTitle: 'Easy Forensic Acquisition',
     evidenceMediaList: evidenceMediaList
   });
 });
+
+// Serve the selectEvidence page
+app.get('/selectEvidence.html', function(req, res){
+	evidenceMediaList = fs.readdirSync( evidenceMediaPath  );
+	evidenceMediaList.every( function(u, i) {
+			console.log(u);
+	} );
+  res.render('selectEvidence', {
+    pageTitle: 'Easy Forensic Acquisition',
+    evidenceMediaList: evidenceMediaList
+  });
+});
+
+
+
 
 app.use(express.static("../E4A") );
  
@@ -68,27 +87,35 @@ child.stderr.on('data', function(data) {
 // evidenceMedia & writeableMedia 
 // once per second for drives.
 var interval;
+
+io.sockets.on('connection', function (socket) {
+
 interval = setInterval( function() {
 	var oldEMList = evidenceMediaList.slice();
-	evidenceMediaList = fs.readdirSync("/tmp");
+	evidenceMediaList = fs.readdirSync(evidenceMediaPath);
 	
 	//NEED TO UPDATE LIST THAT IS SHOWN.
-	if(oldEMList != evidenceMediaList) {
-//		console.log("evidenceMediaList contents changed!");	
+	if(oldEMList.length != evidenceMediaList.length || 
+			! oldEMList.every(function(u, i) {
+				return u === evidenceMediaList[i];
+			} )  ) {
+		console.log("evidenceMediaList contents changed!");	
+
+			socket.emit('evidenceMediaList',   evidenceMediaList );
+
 	}
 //	for(var i in evidenceMediaList) {
 //		console.log(evidenceMediaList[i]);
 //	}
 	
 
-}, 1000);
+}, 5000);
 
 
-io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
+//  socket.emit('news', { hello: 'world' });
+//  socket.on('my other event', function (data) {
+//    console.log(data);
+//  });
 });
 
 
