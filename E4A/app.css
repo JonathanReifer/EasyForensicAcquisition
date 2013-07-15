@@ -34,7 +34,7 @@ html, body {
     width : 100%;
 }
 #myapp.claro .mmButton {
-    left : 50%;
+    margin : 0px;
     margin-left : -100px;
 }
 #myapp.claro .mmButton.dijitButton .dijitButtonNode {

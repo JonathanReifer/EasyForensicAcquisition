@@ -7,6 +7,7 @@ var http = require('http'),
 var io = require('socket.io').listen(server);
 
 var fs = require('fs');
+var crypto = require('crypto');
  
 // Using the .html extension instead of
 // having to name the views as *.ejs
@@ -106,16 +107,35 @@ interval = setInterval( function() {
 			socket.emit('evidenceMediaList',   evidenceMediaList );
 
 	}
-
-	
-
 }, 5000);
 
 
-//  socket.emit('news', { hello: 'world' });
-//  socket.on('my other event', function (data) {
-//    console.log(data);
-//  });
+	
+  socket.on('beginProcessing', function (data) {
+    console.dir(data);
+  	evidenceFileList = fs.readdirSync(evidenceMediaPath+'/'+data.selectedEvidence);
+
+		//TODO NEED TO READ RECURSIVELY INTO ALL DIR IN selectedEvidence.	
+
+		evidenceFileList.forEach( function( filename) {
+			console.log("Calculating Hash Digest for :"+filename);	
+			var shasum = crypto.createHash('sha256');
+			var s = fs.ReadStream( evidenceMediaPath+'/'+data.selectedEvidence+'/'+filename);
+			s.on('data', function(d) {
+				shasum.update(d);
+			});
+			s.on('end', function() {
+				var d = shasum.digest('hex');
+				console.log(d + '  ' + filename);
+			});
+		} );			
+	
+		var outfileName = 'SomeOutFIleName.txt';	
+		socket.emit('processingComplete', {'outfileName': outfileName} );
+
+
+  });
+
 });
 
 

@@ -51,6 +51,11 @@
 			loadWriteableList(writeableMediaList);
 	  });
 
+	  socket.on('processingComplete', function (data) {
+
+			davinci.states.setState('DoneScreen');
+	  });
+
 
 //BEGIN loadEvidenceList
 	var loadEvidenceList = function(theList) {
@@ -106,6 +111,16 @@
 	}; 	
 // END loadWriteableList
 
+	beginProcessing = function() {
+		console.log("Begining Processing!");
+		
+	  socket.emit('beginProcessing', {
+									"selectedEvidence": selectedEvidence,
+									"selectedDestination": selectedDestination
+						   } );
+
+		davinci.states.setState('ProcessingScreen');
+	};
 
 	} );
 </script>
@@ -136,7 +151,7 @@
 <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">
     Add Meta Information :</h1>
   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; left: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
-  <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Process!" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; right: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('ProcessingScreen')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
+  <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Process!" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; right: 15%; top: 70%;" class="mmButton" onclick="beginProcessing();" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
 </div>
 <!-- END metaForm VIEW -->
 

@@ -1,8 +1,8 @@
 
 <!-- EVIDENCE MEDIA LIST -->
 		<% if( typeof evidenceMediaList != "undefined" && evidenceMediaList.length > 0 ) { 
+
 				var verticalOffset = 200;
-		
 				evidenceMediaList.forEach( function(theFile) {
 			
 
@@ -10,13 +10,16 @@
   		<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="<%=theFile %>" iconClass="dijitNoIcon" style="top: <%=verticalOffset%>px;   left: 50%;  position: fixed; " class="mmButton" onclick="davinci.states.setState('MainMenu')"></input>
 		<%
 				verticalOffset += 125;
-		 } ) } else {
+		 } 
+		) 
+
+		} else {
 				console.log("evidenceMedia   NOT   Found!!!!!!!!!!!");
 			%>
-				<h1 style="font-color:red;" >NO FILES FOUND!</h1>
-			
+				<h1 id='noEvidenceFound' style="font-color:red;" >NO FILES FOUND!</h1>
 
 		<%
+
 		}
 	  %>
 
