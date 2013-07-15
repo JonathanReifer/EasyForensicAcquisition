@@ -9,46 +9,149 @@
        Please choose from the following:</br>
    </br>
  </h1>
- <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Acquire" iconClass="dijitNoIcon" style="position: fixed; top: 175px;" class="mmButton" onclick="davinci.states.setState('AcquireMenu')"></input>
-   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Verify" iconClass="dijitNoIcon" style="position: fixed; top: 300px;" class="mmButton"></input>
-   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Settings" iconClass="dijitNoIcon" style="position: fixed; top: 425px;" class="mmButton"></input>
+ <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Acquire" iconClass="dijitNoIcon" style="position: fixed; top: 175px; left: 50%;" class="mmButton" onclick="davinci.states.setState('AcquireMenu')"></input>
+   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Verify" iconClass="dijitNoIcon" style="position: fixed; top: 300px; left: 50%;" class="mmButton"></input>
+   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Settings" iconClass="dijitNoIcon" style="position: fixed; top: 425px; left: 50%;" class="mmButton"></input>
  </div>
 <!-- END mainSelection VIEW -->
 
 <!-- BEGIN selectEvidence VIEW -->
- <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; width: 100%; height: 100%;" doLayout="false" class="mmContentPane">
-  <h1 style="top: 64px; position: relative;" class="mmH1">
-    Acquire Evidence<br></br>Select Evidence to Process :</h1>
+ <div data-dojo-type="dijit/layout/ContentPane" id="acquireMenuContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; width: 100%; height: 100%;" class="mmContentPane" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'MetaMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">
+ <h1 style="top: 64px; position: relative;" class="mmH1" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">
+   Acquire Evidence<br>
+     Select Evidence to Process :</br>
+ </h1>
 
-		<div id=emlTemplateId >
-		<% include ../../E4A/clientviews/evidenceMediaList.html %>
+
+
+ 		<div id=emlTemplateId >
 		</div>
 	<!-- BEGIN evidenceMediaList view -->
 <script>
-	require([ 'socket.io/socket.io' ], function(io)  {
+	require([ 'socket.io/socket.io' ], function( io )  {
 		console.log("Loading evidenceMediaList Data");
-//		var evidenceMediaList = [];
-		var emlTemplate = new EJS({url: 'clientviews/evidenceMediaList.html'});
-//		document.getElementById('emlTemplateId').innerHTML = emlTemplate.render(evidenceMediaList);
+
+		var evidenceMediaList = [];
+		var selectedEvidence;
+
+		var writeableMediaList = [];
+		var selectedDestination;
+	
+		
 		var socket = io.connect('http://localhost:8888');
 	  socket.on('evidenceMediaList', function (data) {
 	    console.log("new evidenceMediaList emitted" );
-//	    socket.emit('my other event', { my: 'data' });
-			console.dir(data);
-//			document.getElementById('emlTemplateId').innerHTML = emlTemplate.update('emlTemplateId',{ 'evidenceMediaList': data} );
-			 emlTemplate.update('emlTemplateId',{ 'evidenceMediaList': data} );
-
-
+			evidenceMediaList = data.slice();
+			loadEvidenceList(evidenceMediaList);
 	  });
+
+	  socket.on('writeableMediaList', function (data) {
+	    console.log("new writeableMediaList emitted" );
+			writeableMediaList = data.slice();
+			loadWriteableList(writeableMediaList);
+	  });
+
+
+//BEGIN loadEvidenceList
+	var loadEvidenceList = function(theList) {
+		console.log("loadEvidenceList called!\n");
+		var offset = 150;
+		
+		theList.forEach( function(theFile) {
+			console.log("TheFile = "+theFile);
+			var button = new dijit.form.Button( {
+				label: theFile,
+				class: "mmButton",
+				onClick : function() 
+					{
+						selectedEvidence=theFile;
+						davinci.states.setState('DestinationMenu')	
+					}
+
+			} );
+			dojo.byId("emlTemplateId" ).appendChild(button.domNode);
+			button.set("style", "top="+offset+"px;  left: 50%;  position: fixed; z-index: 900;" );
+			dojo.setStyle(button.domNode,"top",offset+"px");
+			offset += 125;
+
+	} );
+
+	}; 	
+// END loadEvidenceList
+
+//BEGIN loadWriteableList
+	var loadWriteableList = function(theList) {
+		console.log("loadWriteableList called!\n");
+		var offset = 150;
+		
+		theList.forEach( function(theFile) {
+			console.log("TheFile = "+theFile);
+			var button = new dijit.form.Button( {
+				label: theFile,
+				class: "mmButton",
+				onClick : function() 
+					{
+						selectedDestination=theFile;
+						davinci.states.setState('MetaMenu')	
+					}
+
+			} );
+			dojo.byId("destinationListId" ).appendChild(button.domNode);
+			button.set("style", "top="+offset+"px;  left: 50%;  position: fixed; z-index: 900;" );
+			dojo.setStyle(button.domNode,"top",offset+"px");
+			offset += 125;
+
+	} );
+
+	}; 	
+// END loadWriteableList
+
 
 	} );
 </script>
 	
 	<!-- END evidenceMediaList view -->
 
-  <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="left: 70%; top: 70%; position: absolute; z-index: 900;" class="mmButton" onclick="davinci.states.setState('MainMenu')"></input>
+ <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="top: 70%; position: absolute; z-index: 900; left: 15%; display:inline; " class="mmButton" onclick="davinci.states.setState('MainMenu')" > </input><span data-dojo-type="shapes/Text" style="font-size: 32px; color: rgb(248, 0, 0); position: fixed; top: 225px; width: 100%; text-align: center;" data-maq-deltas="{'MainMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">None Found</span>
+
 </div>
 <!-- END selectEvidence VIEW -->
+
+<!-- BEGIN selectDestination VIEW -->
+ <div data-dojo-type="dijit/layout/ContentPane" id="destinationMenuContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; display: none;" class="mmContentPane" doLayout="false" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':''}]}}">
+<h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">
+     Select Destination Drive :</h1><span data-dojo-type="shapes/Text" style="font-size: 32px; color: rgb(248, 0, 0); position: fixed; top: 225px; width: 100%; text-align: center;" data-maq-deltas="{'MainMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':''}]},'AcquireMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">None Found</span>
+
+ 		<div id=destinationListId >
+		</div>
+
+
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="top: 70%; left: 15%; position: absolute; z-index: 900;" class="mmButton" onclick="davinci.states.setState('AcquireMenu')" ></input>
+</div>
+<!-- END selectDestination VIEW -->
+
+
+<!-- BEGIN metaForm VIEW -->
+ <div data-dojo-type="dijit/layout/ContentPane" id="metaMenuContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; display: none;" class="mmContentPane" doLayout="false" data-maq-deltas="{'MainMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'MetaMenu':{'style':[{'display':''}]}}">
+<h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">
+    Add Meta Information :</h1>
+  <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; left: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
+  <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Process!" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; right: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('ProcessingScreen')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
+</div>
+<!-- END metaForm VIEW -->
+
+<!-- BEGIN Processing VIEW -->
+ <div data-dojo-type="dijit/layout/ContentPane" id="processingScreenContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900;" class="mmContentPane" doLayout="false" data-maq-deltas="{'MetaMenu':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]}}">
+   <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':''}]},'DoneScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]}}">
+     Processing :</h1>
+ </div>
+<!-- END Processing VIEW -->
+
+<!-- BEGIN DONE VIEW -->
+ <div data-dojo-type="dijit/layout/ContentPane" id="doneScreenContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900;" class="mmContentPane" doLayout="false" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':'none'}]},'MetaMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]}}">
+  <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':''}]},'MetaMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]}}">
+    DONE !</h1>
+</div>
 
 
 

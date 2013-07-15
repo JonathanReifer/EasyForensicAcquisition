@@ -30,6 +30,7 @@ var writeableMediaPath = "../testWriteableMediaDir";
 
 var evidenceMediaList = []; 
 var writeableMediaList = []; 
+evidenceMediaList = fs.readdirSync(evidenceMediaPath );
 writeableMediaList = fs.readdirSync(writeableMediaPath );
 
  
@@ -89,6 +90,8 @@ child.stderr.on('data', function(data) {
 var interval;
 
 io.sockets.on('connection', function (socket) {
+socket.emit('evidenceMediaList',   evidenceMediaList );
+socket.emit('writeableMediaList',   writeableMediaList );
 
 interval = setInterval( function() {
 	var oldEMList = evidenceMediaList.slice();
@@ -99,14 +102,11 @@ interval = setInterval( function() {
 			! oldEMList.every(function(u, i) {
 				return u === evidenceMediaList[i];
 			} )  ) {
-		console.log("evidenceMediaList contents changed!");	
-
+			console.log("evidenceMediaList contents changed!");	
 			socket.emit('evidenceMediaList',   evidenceMediaList );
 
 	}
-//	for(var i in evidenceMediaList) {
-//		console.log(evidenceMediaList[i]);
-//	}
+
 	
 
 }, 5000);
