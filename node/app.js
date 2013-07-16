@@ -8,6 +8,9 @@ var io = require('socket.io').listen(server);
 
 var fs = require('fs');
 var crypto = require('crypto');
+
+var sys = require('sys')
+var exec = require('child_process').exec;
  
 // Using the .html extension instead of
 // having to name the views as *.ejs
@@ -20,8 +23,11 @@ app.set('views', __dirname + '/views');
 // extension to res.render()
 app.set('view engine', 'html');
  
-var evidenceMediaPath = "../testEvidenceDir";
-var writeableMediaPath = "../testWriteableMediaDir";
+//var evidenceMediaPath = "../testEvidenceDir";
+//var writeableMediaPath = "../testWriteableMediaDir";
+
+var evidenceMediaPath = "/evidenceMedia";
+var writeableMediaPath = "/writeableMedia";
 
 var evidenceMediaList = []; 
 var writeableMediaList = []; 
@@ -173,6 +179,7 @@ var fileHashingComplete = function(dest, outfileData) {
 		} );
 
 		socket.emit('processingComplete', {'outfileName': outfileName} );
+		exec("sync");
 };
 
 });
