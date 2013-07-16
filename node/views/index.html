@@ -37,6 +37,8 @@
 		var writeableMediaList = [];
 		var selectedDestination;
 	
+		var evidenceButtonList = [];
+		var writeableButtonList = [];
 		
 		var socket = io.connect('http://localhost:8888');
 	  socket.on('evidenceMediaList', function (data) {
@@ -62,6 +64,10 @@
 		console.log("loadEvidenceList called!\n");
 		var offset = 150;
 		
+		evidenceButtonList.forEach( function(theButton) { 
+			theButton.destroy();
+		} );
+		
 		theList.forEach( function(theFile) {
 			console.log("TheFile = "+theFile);
 			var button = new dijit.form.Button( {
@@ -74,6 +80,7 @@
 					}
 
 			} );
+			evidenceButtonList.push(button);
 			dojo.byId("emlTemplateId" ).appendChild(button.domNode);
 			button.set("style", "top="+offset+"px;  left: 50%;  position: fixed; z-index: 900;" );
 			dojo.setStyle(button.domNode,"top",offset+"px");
@@ -88,6 +95,10 @@
 	var loadWriteableList = function(theList) {
 		console.log("loadWriteableList called!\n");
 		var offset = 150;
+
+		writeableButtonList.forEach( function(theButton) { 
+			theButton.destroy();
+		} );
 		
 		theList.forEach( function(theFile) {
 			console.log("TheFile = "+theFile);
@@ -101,6 +112,7 @@
 					}
 
 			} );
+			writeableButtonList.push(button);
 			dojo.byId("destinationListId" ).appendChild(button.domNode);
 			button.set("style", "top="+offset+"px;  left: 50%;  position: fixed; z-index: 900;" );
 			dojo.setStyle(button.domNode,"top",offset+"px");

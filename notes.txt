@@ -3,8 +3,25 @@ need to have express & ejs installed :
 $ npm install express
 $ npm install ejs
 
+-------
+TODO:
+Aqcuisition:
+-Write to file.
+-Back buttons when done.
+-Process indicator
+-meta data fillable form.
+Verification :
+-All.
+Disk Handling:
+-script to mount ro/rw
+- read config file.
+---using autofs to auto mounts ro for /dev/evidenceDevices/* and rw for /dev/writeableDevices/*
 
+Settings :
+- UI to select which ports evidence/writeable.
+- Global Meta
 
+-------
 
 --- Initial Setup
 	Which ports / drives should be evidence only (read only) ?

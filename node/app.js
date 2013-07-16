@@ -97,10 +97,26 @@ interval = setInterval( function() {
 			! oldEMList.every(function(u, i) {
 				return u === evidenceMediaList[i];
 			} )  ) {
-			console.log("evidenceMediaList contents changed!");	
+			console.log("evidenceMediaList contents changed!");
+			console.dir(evidenceMediaList);	
 			socket.emit('evidenceMediaList',   evidenceMediaList );
 
 	}
+
+	var oldWMList = writeableMediaList.slice();
+	writeableMediaList = fs.readdirSync(writeableMediaPath);
+	
+	//NEED TO UPDATE LIST THAT IS SHOWN.
+	if(oldWMList.length != writeableMediaList.length || 
+			! oldWMList.every(function(u, i) {
+				return u === writeableMediaList[i];
+			} )  ) {
+			console.log("writeableMediaList contents changed!");	
+			console.dir(writeableMediaList);	
+			socket.emit('writeableMediaList',   writeableMediaList );
+
+	}
+
 }, 5000);
 
 
