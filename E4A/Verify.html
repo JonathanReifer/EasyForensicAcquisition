@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<title>Untitled</title>
+<script type="text/javascript" src="lib/dojo/dojo/dojo.js" data-dojo-config="'parseOnLoad':true,'async':true,'packages':[{'name':'gridx','location':'../gridx'},{'name':'clipart','location':'../../clipart'},{'name':'maqettaSamples','location':'../../../samples'},{'name':'maqetta','location':'../../maqetta'},{'name':'shapes','location':'../../shapes'},{'name':'zazl','location':'../../zazl'},{'name':'widgets','location':'../../custom'}],'themeMap':[['Android','',['themes/android/android.css']],['BlackBerry','',['themes/blackberry/blackberry.css']],['iPad','',['themes/ipad/ipad.css']],['iPhone','',['themes/iphone/iphone.css']],['.*','',['themes/iphone/iphone.css']]],'mblThemeFiles':[],'mblLoadCompatPattern':''"></script>
+<script type="text/javascript">
+require([
+  "dijit/dijit",
+  "dojo/parser",
+  "maqetta/space",
+  "maqetta/AppStates",
+  "dijit/layout/ContentPane",
+  "dijit/form/Button",
+  "shapes/Text"
+]);
+</script>
+<style>@import "themes/claro/document.css";@import "themes/claro/claro.css";@import "app.css";
+</style>
+<script type="text/javascript" src="app.js"></script>
+</head>
+<body data-maq-flow-layout="false" data-maq-comptype="desktop" class="claro" data-maq-ws="collapse" id="myapp" data-maq-appstates="{'states':['EvidenceMenu','DestinationMenu','ProcessingScreen','DoneScreen'],'initial':'EvidenceMenu','current':'DestinationMenu','focus':'DestinationMenu'}">
+ <div data-dojo-type="dijit/layout/ContentPane" id="acquireMenuContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; width: 100%; height: 100%;" class="mmContentPane" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':''}]}}">
+ <h1 style="top: 64px; position: relative;" class="mmH1" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':''}]}}">
+   Verify Evidence<br>
+      Select Evidence to Verify :</br>
+ </h1>
+ <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="top: 70%; position: absolute; z-index: 900; left: 15%;" class="mmButton" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':''}]}}" onclick="document.location='/';"></input><span data-dojo-type="shapes/Text" style="font-size: 32px; color: rgb(248, 0, 0); position: fixed; top: 225px; width: 100%; text-align: center;" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':''}]}}">None Found</span>
+ </div>
+ <div data-dojo-type="dijit/layout/ContentPane" id="destinationMenuContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900; display: none; left: 0px; top: 0px;" class="mmContentPane" doLayout="false" data-maq-deltas="{'DestinationMenu':{'style':[{'display':''}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">
+<h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">
+  Select Drive Containing<br>
+    File Hash Report :</br>
+</h1>
+<span data-dojo-type="shapes/Text" style="font-size: 32px; color: rgb(248, 0, 0); position: fixed; top: 225px; width: 100%; text-align: center;" data-maq-deltas="{'DestinationMenu':{'style':[{'display':''}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">None Found</span>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="top: 70%; left: 15%; position: absolute; z-index: 900;" class="mmButton" onclick="davinci.states.setState('AcquireMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':''}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Process!" iconClass="dijitNoIcon" style="right: 15%; display: none; position: absolute; z-index: 900; top: 70%;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':''}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}"></input>
+</div>
+ <div data-dojo-type="dijit/layout/ContentPane" id="processingScreenContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900;" class="mmContentPane" doLayout="false" data-maq-deltas="{'DoneScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">
+   <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':''}]},'DoneScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">
+     Processing :</h1>
+ </div>
+ <div data-dojo-type="dijit/layout/ContentPane" id="doneScreenContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900;" class="mmContentPane" doLayout="false" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">
+  <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':''}]},'DestinationMenu':{'style':[{'display':'none'}]},'EvidenceMenu':{'style':[{'display':'none'}]}}">
+    DONE !</h1>
+  <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Quit&lt;br&gt;Eject Media" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; font-size: 24px; left: 50%; top: 300px;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':''}]},'EvidenceMenu':{'style':[{'display':'none'}]}}"></input>
+  <input type="button" data-dojo-type="dijit/form/Button" id="processMoreButton" intermediateChanges="false" label="Process&lt;br&gt;More&lt;br&gt;Evidence" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; top: 150px; left: 50%;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':''}]},'EvidenceMenu':{'style':[{'display':'none'}]}}"></input>
+</div>
+</body>
+</html>

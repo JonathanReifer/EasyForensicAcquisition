@@ -20,12 +20,6 @@ app.set('views', __dirname + '/views');
 // extension to res.render()
 app.set('view engine', 'html');
  
-var messages = [
-  { name: 'Nathan Explosion', message: 'Dethklok rules' },
-  { name: 'William Murderface', message: 'Bass is the heart of the band' },
-  { name: 'Dr. Rockso', message: 'Where is my friend Toki?' }
-];
-
 var evidenceMediaPath = "../testEvidenceDir";
 var writeableMediaPath = "../testWriteableMediaDir";
 
@@ -46,7 +40,7 @@ app.get('/', function(req, res){
 // Serve the selectEvidence page
 app.get('/selectEvidence.html', function(req, res){
 	evidenceMediaList = fs.readdirSync( evidenceMediaPath  );
-	evidenceMediaList.every( function(u, i) {
+	evidenceMediaList.forEach( function(u, i) {
 			console.log(u);
 	} );
   res.render('selectEvidence', {
@@ -117,8 +111,12 @@ interval = setInterval( function() {
 
 		//TODO NEED TO READ RECURSIVELY INTO ALL DIR IN selectedEvidence.	
 
-		evidenceFileList.forEach( function( filename) {
+		var outfileData = '';	
+		var hashProcessStatus = [];
+
+		evidenceFileList.forEach( function( filename, index ) {
 			console.log("Calculating Hash Digest for :"+filename);	
+			hashProcessStatus[index] = 0;
 			var shasum = crypto.createHash('sha256');
 			var s = fs.ReadStream( evidenceMediaPath+'/'+data.selectedEvidence+'/'+filename);
 			s.on('data', function(d) {
@@ -127,14 +125,39 @@ interval = setInterval( function() {
 			s.on('end', function() {
 				var d = shasum.digest('hex');
 				console.log(d + '  ' + filename);
+				outfileData += d + '  ' + filename + "\n";
+				hashProcessStatus[index] = 1;
+				if(hashProcessStatus.length == evidenceFileList.length ) {
+					var complete=1;
+					hashProcessStatus.forEach( function(hashStatus) {
+						if(hashStatus != 1 ) {
+							complete=0;
+							return;;
+						}
+					} );
+					if(complete == 1) {
+						fileHashingComplete(data.selectedDestination, outfileData); 
+					}
+				}
 			});
 		} );			
 	
-		var outfileName = 'SomeOutFIleName.txt';	
-		socket.emit('processingComplete', {'outfileName': outfileName} );
-
-
   });
+
+var fileHashingComplete = function(dest, outfileData) {
+
+		var outfileName = 'SomeOutFIleName.txt';	
+		var outfileFull = writeableMediaPath+'/'+dest+'/'+outfileName;
+		fs.writeFile(outfileFull, outfileData, function(err) {
+			if(err) {
+				console.log(err);
+			} else {
+				console.log("FileHashReport successfully written!\nPath:"+outfileFull);
+			}
+		} );
+
+		socket.emit('processingComplete', {'outfileName': outfileName} );
+};
 
 });
 
