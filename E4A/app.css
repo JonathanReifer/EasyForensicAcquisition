@@ -61,6 +61,8 @@ html, body {
     width : 200px;
 }
 #myapp.claro .mmContentPane.dijitContentPane {
+    margin : 0px;
+    padding : 0px;
     width : 100%;
     height : 100%;
     background-color : black;
@@ -69,4 +71,8 @@ html, body {
     background-color : black;
     color : white;
     text-align : center;
+}
+#myapp.claro .mmTextSpan {
+    color : white;
+    font-size : 18px;
 }

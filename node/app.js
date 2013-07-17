@@ -11,6 +11,8 @@ var crypto = require('crypto');
 
 var sys = require('sys')
 var exec = require('child_process').exec;
+
+var moment = require('moment');
  
 // Using the .html extension instead of
 // having to name the views as *.ejs
@@ -23,11 +25,11 @@ app.set('views', __dirname + '/views');
 // extension to res.render()
 app.set('view engine', 'html');
  
-//var evidenceMediaPath = "../testEvidenceDir";
-//var writeableMediaPath = "../testWriteableMediaDir";
+var evidenceMediaPath = "../testEvidenceDir";
+var writeableMediaPath = "../testWriteableMediaDir";
 
-var evidenceMediaPath = "/evidenceMedia";
-var writeableMediaPath = "/writeableMedia";
+//var evidenceMediaPath = "/evidenceMedia";
+//var writeableMediaPath = "/writeableMedia";
 
 var evidenceMediaList = []; 
 var writeableMediaList = []; 
@@ -168,7 +170,8 @@ interval = setInterval( function() {
 
 var fileHashingComplete = function(dest, outfileData) {
 
-		var outfileName = 'SomeOutFIleName.txt';	
+		var outfileName = moment().format('YYYYMMDD_HHmm');	
+		outfileName = outfileName + '_FileHash.txt';
 		var outfileFull = writeableMediaPath+'/'+dest+'/'+outfileName;
 		fs.writeFile(outfileFull, outfileData, function(err) {
 			if(err) {

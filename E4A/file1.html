@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title>Untitled</title>
-<script type="text/javascript" data-dojo-config="'parseOnLoad':true,'async':true,'packages':[{'name':'gridx','location':'../gridx'},{'name':'clipart','location':'../../clipart'},{'name':'maqettaSamples','location':'../../../samples'},{'name':'maqetta','location':'../../maqetta'},{'name':'shapes','location':'../../shapes'},{'name':'zazl','location':'../../zazl'},{'name':'widgets','location':'../../custom'}],'themeMap':[['Android','',['themes/android/android.css']],['BlackBerry','',['themes/blackberry/blackberry.css']],['iPad','',['themes/ipad/ipad.css']],['iPhone','',['themes/iphone/iphone.css']],['.*','',['themes/iphone/iphone.css']]],'mblThemeFiles':[],'mblLoadCompatPattern':''" src="lib/dojo/dojo/dojo.js"></script>
+<script type="text/javascript" src="lib/dojo/dojo/dojo.js" data-dojo-config="'parseOnLoad':true,'async':true,'packages':[{'name':'gridx','location':'../gridx'},{'name':'clipart','location':'../../clipart'},{'name':'maqettaSamples','location':'../../../samples'},{'name':'maqetta','location':'../../maqetta'},{'name':'shapes','location':'../../shapes'},{'name':'zazl','location':'../../zazl'},{'name':'widgets','location':'../../custom'}],'themeMap':[['Android','',['themes/android/android.css']],['BlackBerry','',['themes/blackberry/blackberry.css']],['iPad','',['themes/ipad/ipad.css']],['iPhone','',['themes/iphone/iphone.css']],['.*','',['themes/iphone/iphone.css']]],'mblThemeFiles':[],'mblLoadCompatPattern':''"></script>
 <script type="text/javascript">
 require([
   "dijit/dijit",
@@ -13,14 +13,15 @@ require([
   "maqetta/AppStates",
   "dijit/layout/ContentPane",
   "dijit/form/Button",
-  "shapes/Text"
+  "shapes/Text",
+  "dijit/form/TextBox"
 ]);
 </script>
 <style>@import "themes/claro/document.css";@import "themes/claro/claro.css";@import "app.css";
 </style>
 <script type="text/javascript" src="app.js"></script>
 </head>
-<body data-maq-flow-layout="false" data-maq-comptype="desktop" class="claro" data-maq-ws="collapse" data-maq-appstates="{'states':['MainMenu','AcquireMenu','DestinationMenu','MetaMenu','ProcessingScreen','DoneScreen'],'initial':'MainMenu','current':'DoneScreen','focus':'DoneScreen'}" id="myapp">
+<body data-maq-flow-layout="false" data-maq-comptype="desktop" class="claro" data-maq-ws="collapse" data-maq-appstates="{'states':['MainMenu','AcquireMenu','DestinationMenu','MetaMenu','ProcessingScreen','DoneScreen'],'initial':'MainMenu','current':'MetaMenu','focus':'MetaMenu'}" id="myapp">
  <div data-dojo-type="dijit/layout/ContentPane" id="mainMenuContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" doLayout="true" style="display: none;" class="mmContentPane" data-maq-deltas="{'MainMenu':{'style':[{'display':''}]},'AcquireMenu':{'style':[{'display':'none'}]}}">
    <h1 style="top: 41px; text-align: center; position: relative;" class="mmH1" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}">
      Welcome to<br>
@@ -49,10 +50,12 @@ require([
     Add Meta Information :</h1>
   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; left: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Process!" iconClass="dijitNoIcon" style="position: absolute; z-index: 900; right: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('DestinationMenu')" data-maq-deltas="{'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':'none'}]}}"></input>
-</div>
+  <input type="text" data-dojo-type="dijit/form/TextBox" title="Case Id" name="Case ID" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="position: absolute; z-index: 900; display: none; left: 292.5px; top: 121px; width: 231.11666870117188px;" placeHolder="Put Case # Here." data-maq-deltas="{'MetaMenu':{'style':[{'display':''}]}}"></input>
+  <span id="caseIdText" style="position: absolute; z-index: 900; display: none; left: 127px; top: 119.5px;" class="mmTextSpan" data-maq-deltas="{'MetaMenu':{'style':[{'display':''}]}}">Case # :</span></div>
  <div data-dojo-type="dijit/layout/ContentPane" id="processingScreenContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900;" class="mmContentPane" doLayout="false" data-maq-deltas="{'DoneScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'MetaMenu':{'style':[{'display':'none'}]}}">
    <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':''}]},'DoneScreen':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'MetaMenu':{'style':[{'display':'none'}]}}">
      Processing :</h1>
+   <div id="progressBarId" style="position: absolute; z-index: 900; display: none; top: 50%; right: 20%; left: 20%;" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':''}]}}"></div>
  </div>
  <div data-dojo-type="dijit/layout/ContentPane" id="doneScreenContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="position: absolute; z-index: 900;" class="mmContentPane" doLayout="false" data-maq-deltas="{'ProcessingScreen':{'style':[{'display':'none'}]},'MetaMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]},'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]}}">
   <h1 style="position: relative; top: 65px;" class="mmH1" data-maq-deltas="{'AcquireMenu':{'style':[{'display':'none'}]},'MainMenu':{'style':[{'display':'none'}]},'ProcessingScreen':{'style':[{'display':'none'}]},'DoneScreen':{'style':[{'display':''}]},'MetaMenu':{'style':[{'display':'none'}]},'DestinationMenu':{'style':[{'display':'none'}]}}">
