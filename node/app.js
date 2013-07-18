@@ -25,17 +25,24 @@ app.set('views', __dirname + '/views');
 // extension to res.render()
 app.set('view engine', 'html');
  
-var evidenceMediaPath = "../testEvidenceDir";
-var writeableMediaPath = "../testWriteableMediaDir";
+//var evidenceMediaPath = "../testEvidenceDir";
+//var writeableMediaPath = "../testWriteableMediaDir";
 
-//var evidenceMediaPath = "/evidenceMedia";
-//var writeableMediaPath = "/writeableMedia";
+var evidenceMediaPath = "/evidenceMedia";
+var writeableMediaPath = "/writeableMedia";
+
+var evidenceMediaLookPath = "/dev/evidenceDevPart";
+var writeableMediaLookPath = "/dev/writeableDevPart";
+
 
 var evidenceMediaList = []; 
-var writeableMediaList = []; 
-evidenceMediaList = fs.readdirSync(evidenceMediaPath );
-writeableMediaList = fs.readdirSync(writeableMediaPath );
-
+var writeableMediaList = [];
+if(fs.existsSync(evidenceMediaLookPath) ) { 
+	evidenceMediaList = fs.readdirSync(evidenceMediaLookPath );
+}
+if(fs.existsSync(writeableMediaLookPath ) ) {
+	writeableMediaList = fs.readdirSync(writeableMediaLookPath );
+}
  
 // Serve the index page
 app.get('/', function(req, res){
@@ -47,7 +54,10 @@ app.get('/', function(req, res){
 
 // Serve the selectEvidence page
 app.get('/selectEvidence.html', function(req, res){
-	evidenceMediaList = fs.readdirSync( evidenceMediaPath  );
+
+	if(fs.existsSync(evidenceMediaLookPath ) ) {
+		evidenceMediaList = fs.readdirSync( evidenceMediaLookPath  );
+	}
 	evidenceMediaList.forEach( function(u, i) {
 			console.log(u);
 	} );
@@ -98,8 +108,11 @@ socket.emit('writeableMediaList',   writeableMediaList );
 
 interval = setInterval( function() {
 	var oldEMList = evidenceMediaList.slice();
-	evidenceMediaList = fs.readdirSync(evidenceMediaPath);
-	
+	if(fs.existsSync(evidenceMediaLookPath ) ) {
+		evidenceMediaList = fs.readdirSync(evidenceMediaLookPath);
+	} else {
+		evidenceMediaList = [];
+	}
 	//NEED TO UPDATE LIST THAT IS SHOWN.
 	if(oldEMList.length != evidenceMediaList.length || 
 			! oldEMList.every(function(u, i) {
@@ -112,8 +125,12 @@ interval = setInterval( function() {
 	}
 
 	var oldWMList = writeableMediaList.slice();
-	writeableMediaList = fs.readdirSync(writeableMediaPath);
-	
+	if(fs.existsSync(writeableMediaLookPath ) ) {
+		writeableMediaList = fs.readdirSync(writeableMediaLookPath);
+	} else {
+		writeableMediaList = [];
+	}
+
 	//NEED TO UPDATE LIST THAT IS SHOWN.
 	if(oldWMList.length != writeableMediaList.length || 
 			! oldWMList.every(function(u, i) {
@@ -181,8 +198,9 @@ var fileHashingComplete = function(dest, outfileData) {
 			}
 		} );
 
-		socket.emit('processingComplete', {'outfileName': outfileName} );
 		exec("sync");
+		exec("scripts/unmountAll.sh");
+		socket.emit('processingComplete', {'outfileName': outfileName} );
 };
 
 });

@@ -1,0 +1,9 @@
+
+
+HOST_Alias HOST = "EasyForensicAcquisition"
+
+Cmnd_Alias MOUNT = /bin/mount, /bin/umount
+
+compadmin HOST=(root) NOPASSWD:MOUNT
+
+

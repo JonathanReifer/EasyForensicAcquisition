@@ -1,0 +1,7 @@
+
+KERNEL=="sd[a-z][1-9]", ENV{THEDEV}="%k",  PROGRAM+="/home/compadmin/EasyForensicAcquisition/scripts/e4aDevNamer.pl %k", SYMLINK+="%c{1}"
+
+
+
+
+
