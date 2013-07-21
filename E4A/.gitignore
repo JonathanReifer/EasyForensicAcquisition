@@ -2,6 +2,7 @@
 lib/*
 themes/*
 samples/*
-
+.DS_Store
+*_old*
 
 

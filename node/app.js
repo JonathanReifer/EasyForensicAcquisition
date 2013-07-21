@@ -25,15 +25,18 @@ app.set('views', __dirname + '/views');
 // extension to res.render()
 app.set('view engine', 'html');
  
-//var evidenceMediaPath = "../testEvidenceDir";
-//var writeableMediaPath = "../testWriteableMediaDir";
+var evidenceMediaPath = "../testEvidenceDir";
+var writeableMediaPath = "../testWriteableMediaDir";
+var evidenceMediaLookPath = evidenceMediaPath;
+var writeableMediaLookPath = writeableMediaPath;
 
+/*
 var evidenceMediaPath = "/evidenceMedia";
 var writeableMediaPath = "/writeableMedia";
 
 var evidenceMediaLookPath = "/dev/evidenceDevPart";
 var writeableMediaLookPath = "/dev/writeableDevPart";
-
+*/
 
 var evidenceMediaList = []; 
 var writeableMediaList = [];
@@ -43,7 +46,9 @@ if(fs.existsSync(evidenceMediaLookPath) ) {
 if(fs.existsSync(writeableMediaLookPath ) ) {
 	writeableMediaList = fs.readdirSync(writeableMediaLookPath );
 }
- 
+
+var metaData = []; 
+
 // Serve the index page
 app.get('/', function(req, res){
   res.render('index', {
@@ -142,53 +147,71 @@ interval = setInterval( function() {
 
 	}
 
-}, 5000);
+}, 2000);
 
 
 	
   socket.on('beginProcessing', function (data) {
     console.dir(data);
   	evidenceFileList = fs.readdirSync(evidenceMediaPath+'/'+data.selectedEvidence);
+//		walk(evidenceMediaPath+'/'+data.selectedEvidence, function(err, evidenceFileList) {
+//		  if (err) throw err;
+//			exec('find', [ evidenceMediaPath+'/'+data.selectedEvidence ], function(err, stdout, stderr) {
+//			console.log("TEST="+stdout);
+//			evidenceFileList = stdout.split('\n');
+			var outfileData = [];	
+			var hashProcessStatus = [];
 
-		//TODO NEED TO READ RECURSIVELY INTO ALL DIR IN selectedEvidence.	
-
-		var outfileData = '';	
-		var hashProcessStatus = [];
-
-		evidenceFileList.forEach( function( filename, index ) {
-			console.log("Calculating Hash Digest for :"+filename);	
-			hashProcessStatus[index] = 0;
-			var shasum = crypto.createHash('sha256');
-			var s = fs.ReadStream( evidenceMediaPath+'/'+data.selectedEvidence+'/'+filename);
-			s.on('data', function(d) {
-				shasum.update(d);
-			});
-			s.on('end', function() {
-				var d = shasum.digest('hex');
-				console.log(d + '  ' + filename);
-				outfileData += d + '  ' + filename + "\n";
-				hashProcessStatus[index] = 1;
-				if(hashProcessStatus.length == evidenceFileList.length ) {
-					var complete=1;
-					hashProcessStatus.forEach( function(hashStatus) {
-						if(hashStatus != 1 ) {
-							complete=0;
-							return;;
-						}
-					} );
-					if(complete == 1) {
-						fileHashingComplete(data.selectedDestination, outfileData); 
-					}
-				}
-			});
-		} );			
+			metaData = [];
+			metaData.push( '### EasyForensicAquisition Evidence Hash Report\n');
+			metaData.push( '### Evidence Selected : '+data.selectedEvidence+'\n');
+			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 	
+			evidenceFileList.forEach( function( filename, index ) {
+				console.log("Calculating Hash Digest for :"+filename);	
+				hashProcessStatus[index] = 0;
+				var shasum = crypto.createHash('sha256');
+				var s = fs.ReadStream( evidenceMediaPath+'/'+data.selectedEvidence+'/'+filename);
+//				var s = fs.ReadStream( filename );
+				s.on('data', function(d) {
+					shasum.update(d);
+				});
+				s.on('end', function() {
+					var d = shasum.digest('hex');
+					console.log(d + '  ' + filename);
+					outfileData[index] =  d + '  ' + filename + "\n";
+					hashProcessStatus[index] = 1;
+					if(hashProcessStatus.length == evidenceFileList.length ) {
+						var complete=1;
+						hashProcessStatus.forEach( function(hashStatus) {
+							if(hashStatus != 1 ) {
+								complete=0;
+								return;;
+							}
+						} );
+						if(complete == 1) {
+							fileHashingComplete(data.selectedDestination, outfileData, data.selectedEvidence, metaData); 
+						}
+					}
+				});
+			} );			
+//		} ); 
   });
 
-var fileHashingComplete = function(dest, outfileData) {
+var fileHashingComplete = function(dest, outfileArr, evid, metaData) {
 
+		var outfileData = '';
+		metaData.push( '### Complete Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
+		metaData.forEach( function(line,ind) {
+			outfileData += line;
+		} );
+		outfileData += '#################### BEGIN FILE HASH LIST ####################\n';
+		outfileArr.forEach( function(line,ind) {
+			outfileData += line;
+		} );
+		outfileData += '####################  END FILE HASH LIST  ####################\n';
 		var outfileName = moment().format('YYYYMMDD_HHmm');	
-		outfileName = outfileName + '_FileHash.txt';
+		outfileName = outfileName + '_FileHash_'+evid+'.txt';
 		var outfileFull = writeableMediaPath+'/'+dest+'/'+outfileName;
 		fs.writeFile(outfileFull, outfileData, function(err) {
 			if(err) {
@@ -206,6 +229,31 @@ var fileHashingComplete = function(dest, outfileData) {
 });
 
 
+// BEGIN walk function
+var walk = function(dir, done) {
+  var results = [];
+  fs.readdir(dir, function(err, list) {
+    if (err) return done(err);
+    var i = 0;
+    (function next() {
+      var file = list[i++];
+      if (!file) return done(null, results);
+      file = dir + '/' + file;
+      fs.stat(file, function(err, stat) {
+        if (stat && stat.isDirectory()) {
+          walk(file, function(err, res) {
+            results = results.concat(res);
+            next();
+          });
+        } else {
+          results.push(file);
+          next();
+        }
+      });
+    })();
+  });
+};
+// END walk function
 
 
 

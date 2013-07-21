@@ -22,6 +22,10 @@ Settings :
 - Global Meta
 
 -------
+FOR DVD BURNING :
+growisofs -udf -Z /dev/dvd -V "Test1Disc" /path/to/files
+
+-----
 
 --- Initial Setup
 	Which ports / drives should be evidence only (read only) ?
