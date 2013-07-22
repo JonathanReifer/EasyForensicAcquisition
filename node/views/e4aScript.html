@@ -107,6 +107,8 @@
 	//BEGIN beginProcessing
 	beginProcessing = function() {
 		console.log("Begining Processing!");
+		
+		var requestedOps = ['HashEvidence', 'BurnDVD', 'HashDvd', 'VerifyMatch'  ];
 
 		var userMeta = {};
 		
@@ -130,6 +132,7 @@
 
 		}		
 	  socket.emit('beginProcessing', {
+									"requestedOps": requestedOps,
 									"userMeta": userMeta,
 									"selectedEvidence": selectedEvidence,
 									"selectedDestination": selectedDestination

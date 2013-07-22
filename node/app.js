@@ -13,6 +13,8 @@ var sys = require('sys')
 var exec = require('child_process').exec;
 
 var moment = require('moment');
+
+var spawn = require('child_process').spawn;
  
 // Using the .html extension instead of
 // having to name the views as *.ejs
@@ -162,15 +164,6 @@ interval = setInterval( function() {
 	
   socket.on('beginProcessing', function (data) {
     console.dir(data);
-  	evidenceFileList = fs.readdirSync(evidenceMediaPath+'/'+data.selectedEvidence);
-//		walk(evidenceMediaPath+'/'+data.selectedEvidence, function(err, evidenceFileList) {
-//		  if (err) throw err;
-//			exec('find', [ evidenceMediaPath+'/'+data.selectedEvidence ], function(err, stdout, stderr) {
-//			console.log("TEST="+stdout);
-//			evidenceFileList = stdout.split('\n');
-			var outfileData = [];	
-			var hashProcessStatus = [];
-
 
 			metaData = [];
 			metaData.push( '### EasyForensicAquisition Evidence Hash Report\n');
@@ -183,7 +176,111 @@ interval = setInterval( function() {
 				} 
 			}
 			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
+
+			hashFiles(data, metaData );	
+
+
+//		} ); 
+  });
+
+//BEGIN ejectDrives
+socket.on('ejectDrives', function (data) {
+	console.log("ejectDrives called!");
+
+} );
+//END ejectDrives
+
+//BEGIN ejectDrives
+socket.on('checkForDrives', function (data) {
+	console.log("checkForDrives called!");
 	
+
+} );
+//END ejectDrives
+
+
+//BEGIN fileHashingComplete
+var fileHashingComplete = function(dest, outfileArr, evid, metaData) {
+
+		var outfileData = '';
+		metaData.push( '### Complete Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
+		metaData.forEach( function(line,ind) {
+			outfileData += line;
+		} );
+		outfileData += '#################### BEGIN FILE HASH LIST FOR: '+evid+' ####################\n';
+		outfileArr.forEach( function(line,ind) {
+			outfileData += line;
+		} );
+		outfileData += '####################  END FILE HASH LIST FOR: '+evid+'  ####################\n';
+		var outfileName = moment().format('YYYYMMDD_HHmm');	
+		outfileName = outfileName + '_FileHash_'+evid+'.txt';
+		var outfileFull = writeableMediaPath+'/'+dest+'/'+outfileName;
+		fs.writeFile(outfileFull, outfileData, function(err) {
+			if(err) {
+				console.log(err);
+			} else {
+				console.log("FileHashReport successfully written!\nPath:"+outfileFull);
+			}
+		} );
+
+		exec("sync");
+		exec("scripts/unmountAll.sh");
+		socket.emit('processingComplete', {'outfileName': outfileName} );
+};
+
+
+
+// BEGIN walk function
+var walk = function(dir, done) {
+  var results = [];
+  fs.readdir(dir, function(err, list) {
+    if (err) return done(err);
+    var i = 0;
+    (function next() {
+      var file = list[i++];
+      if (!file) return done(null, results);
+      file = dir + '/' + file;
+      fs.stat(file, function(err, stat) {
+        if (stat && stat.isDirectory()) {
+          walk(file, function(err, res) {
+            results = results.concat(res);
+            next();
+          });
+        } else {
+          results.push(file);
+          next();
+        }
+      });
+    })();
+  });
+};
+// END walk function
+
+// BEGIN burnDvd function
+var burnDvd = function( sourceDir  ) {
+	
+
+ 	var burnProcess = spawn('growisofs', ['-udf', '-Z', '/dev/sr1', '-V', discName, sourceDir] );
+
+
+};
+// END burnDvd function
+
+
+var hashFiles = function(data, metaData) {
+
+		var outfileData = [];	
+		var hashProcessStatus = [];
+
+
+  	evidenceFileList = fs.readdirSync(evidenceMediaPath+'/'+data.selectedEvidence);
+//		walk(evidenceMediaPath+'/'+data.selectedEvidence, function(err, evidenceFileList) {
+//		  if (err) throw err;
+//			exec('find', [ evidenceMediaPath+'/'+data.selectedEvidence ], function(err, stdout, stderr) {
+//			console.log("TEST="+stdout);
+//			evidenceFileList = stdout.split('\n');
+	
+
 			evidenceFileList.forEach( function( filename, index ) {
 				console.log("Calculating Hash Digest for :"+filename);	
 				hashProcessStatus[index] = 0;
@@ -212,84 +309,15 @@ interval = setInterval( function() {
 					}
 				});
 			} );			
-//		} ); 
-  });
 
-//BEGIN ejectDrives
-socket.on('ejectDrives', function (data) {
-	console.log("ejectDrives called!");
-
-} );
-//END ejectDrives
-
-//BEGIN ejectDrives
-socket.on('checkForDrives', function (data) {
-	console.log("checkForDrives called!");
-	
-
-} );
-//END ejectDrives
-
-
-
-
-//BEGIN fileHashingComplete
-var fileHashingComplete = function(dest, outfileArr, evid, metaData) {
-
-		var outfileData = '';
-		metaData.push( '### Complete Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
-		metaData.forEach( function(line,ind) {
-			outfileData += line;
-		} );
-		outfileData += '#################### BEGIN FILE HASH LIST ####################\n';
-		outfileArr.forEach( function(line,ind) {
-			outfileData += line;
-		} );
-		outfileData += '####################  END FILE HASH LIST  ####################\n';
-		var outfileName = moment().format('YYYYMMDD_HHmm');	
-		outfileName = outfileName + '_FileHash_'+evid+'.txt';
-		var outfileFull = writeableMediaPath+'/'+dest+'/'+outfileName;
-		fs.writeFile(outfileFull, outfileData, function(err) {
-			if(err) {
-				console.log(err);
-			} else {
-				console.log("FileHashReport successfully written!\nPath:"+outfileFull);
-			}
-		} );
-
-		exec("sync");
-		exec("scripts/unmountAll.sh");
-		socket.emit('processingComplete', {'outfileName': outfileName} );
 };
+
+
+
+
 
 });
-
-
-// BEGIN walk function
-var walk = function(dir, done) {
-  var results = [];
-  fs.readdir(dir, function(err, list) {
-    if (err) return done(err);
-    var i = 0;
-    (function next() {
-      var file = list[i++];
-      if (!file) return done(null, results);
-      file = dir + '/' + file;
-      fs.stat(file, function(err, stat) {
-        if (stat && stat.isDirectory()) {
-          walk(file, function(err, res) {
-            results = results.concat(res);
-            next();
-          });
-        } else {
-          results.push(file);
-          next();
-        }
-      });
-    })();
-  });
-};
-// END walk function
+// END SOCKET.IO WRAPPER
 
 
 
