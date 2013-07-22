@@ -76,3 +76,43 @@ html, body {
     color : white;
     font-size : 18px;
 }
+#myapp.claro .mainSpan {
+    position : fixed;
+    color : white;
+    font-size : 20px;
+}
+#myapp.claro .test.dijitButton .dijitButtonNode {
+    background-image : none;
+    color : white;
+    font-size : 20px;
+    height : 75px;
+    background-color : #1e1e1e;
+}
+#myapp.claro .test.dijitDropDownButton .dijitButtonNode {
+    background-color : black;
+}
+#myapp.claro .test.dijitDropDownButton .dijitButtonNode {
+    background-color : black;
+}
+#myapp.claro .test.dijitDropDownButton .dijitButtonNode {
+    background-color : #2e2727;
+}
+#myapp.claro .test {
+    left : 80px;
+    position : fixed;
+}
+#myapp.claro .test.dijitDropDownButton .dijitButtonNode {
+    height : 100px;
+}
+#myapp.claro .test.dijitDropDownButton .dijitButtonNode {
+    height : 100px;
+}
+#myapp.claro .test.dijitDropDownButton .dijitButtonNode {
+    height : 100px;
+}
+#myapp.claro .mainText.dijitInputInner {
+    font-size : 18px;
+}
+#myapp.claro .mainText.dijitTextBox {
+    font-size : 18px;
+}

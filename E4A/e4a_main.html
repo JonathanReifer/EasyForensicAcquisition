@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<title>Untitled</title>
+<script type="text/javascript" src="lib/dojo/dojo/dojo.js" data-dojo-config="'parseOnLoad':true,'async':true,'packages':[{'name':'gridx','location':'../gridx'},{'name':'clipart','location':'../../clipart'},{'name':'maqettaSamples','location':'../../../samples'},{'name':'maqetta','location':'../../maqetta'},{'name':'shapes','location':'../../shapes'},{'name':'zazl','location':'../../zazl'},{'name':'widgets','location':'../../custom'}],'themeMap':[['Android','',['themes/android/android.css']],['BlackBerry','',['themes/blackberry/blackberry.css']],['iPad','',['themes/ipad/ipad.css']],['iPhone','',['themes/iphone/iphone.css']],['.*','',['themes/iphone/iphone.css']]],'mblThemeFiles':[],'mblLoadCompatPattern':''"></script>
+<script type="text/javascript">
+require([
+  "dijit/dijit",
+  "dojo/parser",
+  "maqetta/space",
+  "maqetta/AppStates",
+  "dijit/layout/ContentPane",
+  "dijit/form/Button"
+]);
+</script>
+<style>@import "themes/claro/document.css";@import "themes/claro/claro.css";@import "app.css";
+</style>
+<script type="text/javascript" src="app.js"></script>
+</head>
+<body data-maq-flow-layout="true" data-maq-comptype="desktop" class="claro" data-maq-ws="collapse" data-maq-appstates="{'states':['MainState'],'current':'MainState','focus':'MainState','initial':'MainState'}" id="myapp">
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" doLayout="false" class="mmContentPane"><span style="color: white; text-align: center; font-size: 24px; width: 100%; display: none; position: fixed; top: 80px;" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}">Welcome To:<br>
+   Easy Forensic Acquisition<br>
+     What do you have?</br>
+</br>
+</span><input type="button" data-dojo-type="dijit/form/Button" id="mainButton1" intermediateChanges="false" label="1. I have a DVD with files on it and I want to hash and burn a copy of it to another disc." iconClass="dijitNoIcon" style="display: none; top: 200px;" class="test" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="2. I have a USB Drive with files on it and I want to hash and burn a copy of it to a disc (DVD)." iconClass="dijitNoIcon" style="display: none; top: 300px;" class="test" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}" onclick="location.href='usbAcquire.html'"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="3. I already have two discs (DVDs) and I want to Verify that the files on them are the same." iconClass="dijitNoIcon" style="display: none; top: 400px;" class="test" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="4. I have a DVD or USB Drive and a USB Drive with a FileHashReport that I want to Verify." iconClass="dijitNoIcon" style="display: none; top: 500px;" class="test" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="5. I have a DVD that I want to duplicate to another DVD (NO FILE HASHING DONE)." iconClass="dijitNoIcon" style="display: none; top: 600px;" class="test" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="6. I want to change the settings." iconClass="dijitNoIcon" style="display: none; top: 700px;" class="test" data-maq-deltas="{'MainState':{'style':[{'display':''}]}}"></input>
+</div>
+</body>
+</html>

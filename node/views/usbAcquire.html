@@ -1,0 +1,50 @@
+
+
+<% include header.html %>
+
+<% include e4aScript.html %>
+
+
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" doLayout="false" class="mmContentPane" data-maq-deltas="{'step2':{'style':[{'display':'none'}]},'step3':{'style':[{'display':'none'}]}}">
+ <span style="display: none; top: 80px; width: 80%; left: 10%; text-align: center;" class="mainSpan" data-maq-deltas="{'step1':{'style':[{'display':''}]}}">Before we begin, please make sure that there are NO optical discs inserted or USB drives plugged in.</span><span style="width: 80%; left: 10%; display: none; top: 200px; text-align: center;" class="mainSpan" data-maq-deltas="{'step1':{'style':[{'display':''}]}}">Look now and if any are inserted, please remove them, then press 'Continue' when you are ready.</span><input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="display: none; position: fixed; left: 20%; top: 70%;" class="mmButton" onclick="location.href='e4a_main.html'" data-maq-deltas="{'step1':{'style':[{'display':''}]}}"></input>
+   <input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Continue" iconClass="dijitNoIcon" style="display: none; position: fixed; right: 15%; top: 70%;" class="mmButton" onclick="davinci.states.setState('step2')" data-maq-deltas="{'step1':{'style':[{'display':''}]}}"></input>
+ </div>
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="width: 100%; display: none;" doLayout="false" class="mmContentPane" data-maq-deltas="{'step2':{'style':[{'display':''}]}}"><span style="display: none; width: 100%; top: 80px; text-align: center;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">Ok, here's what you need:<span style="display: none; left: 30%; text-align: left; top: 350px;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">3) A blank DVD to burn the files onto.<br>
+ Insert this disc in the optical drive red in color marked "Writeable Drive - NO Evidence"</br>
+</span></span>
+<div id="usbEvidenceFoundDiv" style="display: none; top: 170px; left: 5%;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">
+==NONE FOUND==</div>
+<span style="display: none; top: 150px; left: 30%;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">1) USB Drive with Evidence on it.<br>
+ Plug it into any USB port green in color marked "Read-Only Evidence"</br>
+</span>
+<div id="usbWriteableFoundDiv" style="left: 5%; display: none; top: 270px;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">
+==NONE FOUND==</div>
+<div id="blankDiscFoundDiv" style="left: 5%; display: none; top: 370px;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">
+==NONE FOUND==</div>
+<span style="display: none; top: 250px; left: 30%;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">2) USB Drive that the FileHashReport can be written to. <br>
+ Plug this drive into any USB port red in color marked "Writeable Drive - NO Evidence"</br>
+</span><input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="display: none; position: fixed; top: 70%; left: 20%;" class="mmButton" data-maq-deltas="{'step2':{'style':[{'display':''}]}}" onclick="davinci.states.setState('step1')"></input>
+<span style="display: none; top: 450px; width: 80%; left: 10%;" class="mainSpan" data-maq-deltas="{'step2':{'style':[{'display':''}]}}">After you have completed the above ( you should have a check mark by each requirement), press &quot;Continue&quot;</span><input type="button" data-dojo-type="dijit/form/Button" id="step2Continue" intermediateChanges="false" label="Continue" iconClass="dijitNoIcon" style="display: none; position: fixed; top: 70%; right: 15%;" class="mmButton" data-maq-deltas="{'step2':{'style':[{'display':''}]}}" onclick="davinci.states.setState('step3')"></input>
+</div>
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="display: none;" doLayout="false" class="mmContentPane" data-maq-deltas="{'step3':{'style':[{'display':''}]}}"><span style="display: none; top: 80px; text-align: center; width: 80%; left: 10%;" class="mainSpan" data-maq-deltas="{'step3':{'style':[{'display':''}]}}">Add your own info to the FileHashReport file:<br>
+    (the information you enter here will be store in the top of the text file that is saved with the hash information)</br>
+  </span>
+<span style="display: none; top: 150px; left: 150px;" class="mainSpan" data-maq-deltas="{'step3':{'style':[{'display':''}]}}">Case # :</span>
+<input type="text" data-dojo-type="dijit/form/TextBox" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="display: none; position: fixed; top: 150px; width: 300px; left: 350px;" class="mainText" data-maq-deltas="{'step3':{'style':[{'display':''}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Back" iconClass="dijitNoIcon" style="display: none; position: fixed; top: 70%; left: 20%;" class="mmButton" data-maq-deltas="{'step3':{'style':[{'display':''}]}}" onclick="davinci.states.setState('step2')"></input>
+<span style="display: none; top: 190px; left: 150px;" class="mainSpan" data-maq-deltas="{'step3':{'style':[{'display':''}]}}">Tax # :</span><span style="display: none; top: 230px; left: 150px;" class="mainSpan" data-maq-deltas="{'step3':{'style':[{'display':''}]}}">Disc Description :</span>
+<input type="text" data-dojo-type="dijit/form/TextBox" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="position: fixed; width: 300px; left: 350px; display: none; top: 190px;" class="mainText" data-maq-deltas="{'step3':{'style':[{'display':''}]}}"></input>
+<span style="display: none; top: 270px; left: 150px;" class="mainSpan" data-maq-deltas="{'step3':{'style':[{'display':''}]}}">Other Information :</span>
+<textarea type="text" data-dojo-type="dijit/form/Textarea" intermediateChanges="false" rows="3" trim="false" uppercase="false" lowercase="false" propercase="false" style="display: none; position: fixed; left: 150px; top: 310px; height: 400px; right: 10%; width: auto;" class="mainText" data-maq-deltas="{'step3':{'style':[{'display':''}]}}"></textarea>
+<input type="text" data-dojo-type="dijit/form/TextBox" intermediateChanges="false" trim="false" uppercase="false" lowercase="false" propercase="false" selectOnClick="false" style="position: fixed; width: 300px; left: 350px; display: none; top: 230px;" class="mainText" data-maq-deltas="{'step3':{'style':[{'display':''}]}}"></input>
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Process" iconClass="dijitNoIcon" style="display: none; top: 70%; position: fixed; right: 15%;" class="mmButton" data-maq-deltas="{'step3':{'style':[{'display':''}]}}"></input>
+</div>
+
+
+
+
+
+
+
+<% include footer.html %>
+

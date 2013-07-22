@@ -1,0 +1,132 @@
+
+
+
+<script>
+	require([ 'socket.io/socket.io' ], function( io )  {
+		console.log("Loading evidenceMediaList Data");
+
+		var evidenceMediaList = [];
+		var selectedEvidence;
+
+		var writeableMediaList = [];
+		var selectedDestination;
+	
+		var evidenceButtonList = [];
+		var writeableButtonList = [];
+		
+		var socket = io.connect('http://localhost:8888');
+	  socket.on('evidenceMediaList', function (data) {
+	    console.log("new evidenceMediaList emitted" );
+			evidenceMediaList = data.slice();
+			loadEvidenceList(evidenceMediaList);
+	  });
+
+	  socket.on('writeableMediaList', function (data) {
+	    console.log("new writeableMediaList emitted" );
+			writeableMediaList = data.slice();
+			loadWriteableList(writeableMediaList);
+	  });
+
+	  socket.on('processingComplete', function (data) {
+
+			davinci.states.setState('DoneScreen');
+	  });
+
+
+//BEGIN loadEvidenceList
+	var loadEvidenceList = function(theList) {
+		console.log("loadEvidenceList called!\n");
+		var offset = 150;
+		
+		evidenceButtonList.forEach( function(theButton) { 
+			theButton.destroy();
+		} );
+		
+		theList.forEach( function(theFile) {
+			console.log("TheFile = "+theFile);
+			var button = new dijit.form.Button( {
+				label: theFile,
+				class: "mmButton",
+				onClick : function() 
+					{
+						selectedEvidence=theFile;
+						davinci.states.setState('DestinationMenu')	
+					}
+
+			} );
+			evidenceButtonList.push(button);
+			dojo.byId("emlTemplateId" ).appendChild(button.domNode);
+			button.set("style", "top="+offset+"px;  left: 50%;  position: fixed; z-index: 900;" );
+			dojo.setStyle(button.domNode,"top",offset+"px");
+			offset += 125;
+
+	} );
+
+	}; 	
+// END loadEvidenceList
+
+//BEGIN loadWriteableList
+	var loadWriteableList = function(theList) {
+		console.log("loadWriteableList called!\n");
+		var offset = 150;
+
+		writeableButtonList.forEach( function(theButton) { 
+			theButton.destroy();
+		} );
+		
+		theList.forEach( function(theFile) {
+			console.log("TheFile = "+theFile);
+			var button = new dijit.form.Button( {
+				label: theFile,
+				class: "mmButton",
+				onClick : function() 
+					{
+						selectedDestination=theFile;
+						davinci.states.setState('MetaMenu')	
+					}
+
+			} );
+			writeableButtonList.push(button);
+			dojo.byId("destinationListId" ).appendChild(button.domNode);
+			button.set("style", "top="+offset+"px;  left: 50%;  position: fixed; z-index: 900;" );
+			dojo.setStyle(button.domNode,"top",offset+"px");
+			offset += 125;
+
+	} );
+
+	}; 	
+// END loadWriteableList
+
+	//BEGIN beginProcessing
+	beginProcessing = function() {
+		console.log("Begining Processing!");
+		
+	  socket.emit('beginProcessing', {
+									"selectedEvidence": selectedEvidence,
+									"selectedDestination": selectedDestination
+						   } );
+
+		davinci.states.setState('ProcessingScreen');
+	};
+	//END beginProcessing
+
+	//BEGIN ejectAllDrives
+	ejectDrives = function() {
+		console.log("Ejecting Drives");
+	  socket.emit('ejectDrives', { } );
+
+	};	
+
+
+	//END ejectAllDrives
+
+
+	} );
+	//END socket.io connection
+</script>
+	
+
+
+
+
+
