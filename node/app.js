@@ -280,7 +280,9 @@ var burnDVD = function( data ) {
 	burnProcess.on('close', function (code) {
 		console.log('burnProcess child process exited with code ' + code);
 //		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
-		e4aProcess(data,'BurnDVD');
+		if(code == 0) {
+			setTimeout(e4aProcess,30000, [data,'BurnDVD']);
+		}
 	});
 */
 	//temp testing only
