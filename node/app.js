@@ -15,6 +15,9 @@ var exec = require('child_process').exec;
 var moment = require('moment');
 
 var spawn = require('child_process').spawn;
+
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
  
 // Using the .html extension instead of
 // having to name the views as *.ejs
@@ -177,7 +180,7 @@ interval = setInterval( function() {
 			}
 			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 
-			hashFiles(data, metaData );	
+			hashFiles(data, 'HashEvidence' );	
 
 
 //		} ); 
@@ -200,7 +203,8 @@ socket.on('checkForDrives', function (data) {
 
 
 //BEGIN fileHashingComplete
-var fileHashingComplete = function(dest, outfileArr, evid, metaData) {
+//var fileHashingComplete = function(dest, outfileArr, evid, metaData, theOperation) {
+var fileHashingComplete = function(dest, outfileArr, evid, data, theOperation) {
 
 		var outfileData = '';
 		metaData.push( '### Complete Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
@@ -224,8 +228,10 @@ var fileHashingComplete = function(dest, outfileArr, evid, metaData) {
 		} );
 
 		exec("sync");
-		exec("scripts/unmountAll.sh");
-		socket.emit('processingComplete', {'outfileName': outfileName} );
+//		exec("scripts/unmountAll.sh");
+//		socket.emit('processingComplete', {'outfileName': outfileName} );
+
+		eventEmitter.emit('e4aProcess', data, theOperation  );
 };
 
 
@@ -256,23 +262,39 @@ var walk = function(dir, done) {
 };
 // END walk function
 
-// BEGIN burnDvd function
-var burnDvd = function( sourceDir  ) {
-	
+// BEGIN burnDVD function
+var burnDVD = function( data ) {
 
- 	var burnProcess = spawn('growisofs', ['-udf', '-Z', '/dev/sr1', '-V', discName, sourceDir] );
+	var discName = data.selectedEvidence.replace(/^\w+_/,''); 
+	var fullSelectedPath = evidenceMediaPath+'/'+data.selectedEvidence;
+	consolw.log("burnDVD: discName="+discName+" fullSelectedPath="+fullSelectedPath);
+ 	var burnProcess = spawn('growisofs', ['-udf', '-Z', '/dev/sr1', '-V', discName, fullSelectedPath ] );
+
+	burnProcess.stdout.on('data', function(data) {
+		console.log('burnProcess stdout: ' + data);
+	});	
+
+	burnProcess.stderr.on('data', function(data) {
+		console.log('burnProcess stdout: ' + data);
+	});	
+
+	burnProcess.on('close', function (code) {
+		console.log('burnProcess child process exited with code ' + code);
+		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
+	});
 
 
 };
-// END burnDvd function
+// END burnDVD function
 
 
-var hashFiles = function(data, metaData) {
+//var hashFiles = function(data, metaData, theOperation) {
+var hashFiles = function(data, theOperation) {
 
 		var outfileData = [];	
 		var hashProcessStatus = [];
 
-
+		
   	evidenceFileList = fs.readdirSync(evidenceMediaPath+'/'+data.selectedEvidence);
 //		walk(evidenceMediaPath+'/'+data.selectedEvidence, function(err, evidenceFileList) {
 //		  if (err) throw err;
@@ -304,7 +326,7 @@ var hashFiles = function(data, metaData) {
 							}
 						} );
 						if(complete == 1) {
-							fileHashingComplete(data.selectedDestination, outfileData, data.selectedEvidence, metaData); 
+							fileHashingComplete(data.selectedDestination, outfileData, data.selectedEvidence, data, theOperation); 
 						}
 					}
 				});
@@ -313,6 +335,23 @@ var hashFiles = function(data, metaData) {
 };
 
 
+eventEmitter.on('e4aProcess',function( data, finishedOp ) {
+
+	var opsList = data.requestedOps;
+	if ( finishedOp == 'HashEvidence' ) {
+		burnDVD( data );
+	} else if ( finishedOp == 'BurnDVD' ) { 
+//		hashFiles(data, 'HashDVD');	
+	} else if ( finishedOp == 'HashDVD' ) { 
+
+	} else if ( finishedOp == 'VerifyMatch' ) { 
+
+//		socket.emit('processingComplete', {'outfileName': outfileName} );
+	} 
+
+	
+
+} );
 
 
 
