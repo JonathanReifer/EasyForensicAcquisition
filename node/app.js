@@ -58,15 +58,24 @@ app.get('/', function(req, res){
 });
 
 // Serve the selectEvidence page
-app.get('/selectEvidence.html', function(req, res){
+app.get('/usbAcquire.html', function(req, res){
 
+/*
 	if(fs.existsSync(evidenceMediaLookPath ) ) {
 		evidenceMediaList = fs.readdirSync( evidenceMediaLookPath  );
 	}
 	evidenceMediaList.forEach( function(u, i) {
 			console.log(u);
 	} );
-  res.render('selectEvidence', {
+*/
+  res.render('usbAcquire', {
+    pageTitle: 'Easy Forensic Acquisition',
+    evidenceMediaList: evidenceMediaList
+  });
+});
+
+app.get('/process.html', function(req, res){
+  res.render('process', {
     pageTitle: 'Easy Forensic Acquisition',
     evidenceMediaList: evidenceMediaList
   });
@@ -162,9 +171,17 @@ interval = setInterval( function() {
 			var outfileData = [];	
 			var hashProcessStatus = [];
 
+
 			metaData = [];
 			metaData.push( '### EasyForensicAquisition Evidence Hash Report\n');
 			metaData.push( '### Evidence Selected : '+data.selectedEvidence+'\n');
+			if(data.userMeta) {
+				for(var key in data.userMeta) {
+					var prefix = '### UserMeta: '+key+' : ';
+					data.userMeta[key] = data.userMeta[key].replace(/\n/g, '\n'+prefix);
+					metaData.push( prefix+data.userMeta[key]+'\n');
+				} 
+			}
 			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 	
 			evidenceFileList.forEach( function( filename, index ) {
@@ -198,6 +215,25 @@ interval = setInterval( function() {
 //		} ); 
   });
 
+//BEGIN ejectDrives
+socket.on('ejectDrives', function (data) {
+	console.log("ejectDrives called!");
+
+} );
+//END ejectDrives
+
+//BEGIN ejectDrives
+socket.on('checkForDrives', function (data) {
+	console.log("checkForDrives called!");
+	
+
+} );
+//END ejectDrives
+
+
+
+
+//BEGIN fileHashingComplete
 var fileHashingComplete = function(dest, outfileArr, evid, metaData) {
 
 		var outfileData = '';

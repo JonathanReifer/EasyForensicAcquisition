@@ -13,18 +13,25 @@
 	
 		var evidenceButtonList = [];
 		var writeableButtonList = [];
-		
+
+		if( ! window.theType ) {
+			window.theType = "";
+		}
+	
 		var socket = io.connect('http://localhost:8888');
 	  socket.on('evidenceMediaList', function (data) {
 	    console.log("new evidenceMediaList emitted" );
 			evidenceMediaList = data.slice();
-			loadEvidenceList(evidenceMediaList);
+//			loadEvidenceList(evidenceMediaList);
+			checkMediaList();
+
 	  });
 
 	  socket.on('writeableMediaList', function (data) {
 	    console.log("new writeableMediaList emitted" );
 			writeableMediaList = data.slice();
-			loadWriteableList(writeableMediaList);
+//			loadWriteableList(writeableMediaList);
+			checkMediaList();
 	  });
 
 	  socket.on('processingComplete', function (data) {
@@ -100,25 +107,101 @@
 	//BEGIN beginProcessing
 	beginProcessing = function() {
 		console.log("Begining Processing!");
+
+		var userMeta = {};
 		
+		if( window.theType == "usbAcquire" ) {
+			var caseNum = dojo.byId("meta_casenum");
+			if(caseNum) {
+				userMeta['Case #'] = caseNum.value;
+			}
+			var taxNum = dojo.byId("meta_taxid");
+			if(taxNum) {
+				userMeta['Tax #'] = taxNum.value;
+			}
+			var discDesc = dojo.byId("meta_discDesc");
+			if(discDesc) {
+				userMeta['Disc Description'] = discDesc.value;
+			}
+			var otherInfo = dojo.byId("meta_otherInfo");
+			if(otherInfo) {
+				userMeta['Other Information'] = otherInfo.value;
+			}
+
+		}		
 	  socket.emit('beginProcessing', {
+									"userMeta": userMeta,
 									"selectedEvidence": selectedEvidence,
 									"selectedDestination": selectedDestination
 						   } );
-
-		davinci.states.setState('ProcessingScreen');
+		location.href='/process.html'
+//		davinci.states.setState('ProcessingScreen');
 	};
 	//END beginProcessing
 
-	//BEGIN ejectAllDrives
-	ejectDrives = function() {
+	//BEGIN usbAcquire
+	usbAcquire = function() {
 		console.log("Ejecting Drives");
 	  socket.emit('ejectDrives', { } );
-
+		document.location="usbAcquire.html";
 	};	
+	//END usbAcquire
+
+	//BEGIN checkForDrives
+	checkForDrives = function() {
+	  socket.emit('checkForDrives', { } );
+		davinci.states.setState('step2')
+
+		checkMediaList();
+//		if( evidenceMediaList.length > 0 ) { 
+//			dojo.byId("usbEvidenceFoundDiv").innerHTML = "TEST";
+//		}
+
+	}
+	//END checkForDrives
+
+	//BEGIN driveFound
+	  socket.on('driveFound', function (data) {
+	    console.log("new writeableMediaList emitted" );
+			writeableMediaList = data.slice();
+			loadWriteableList(writeableMediaList);
+	  });
+	//END driveFound
+	
+	checkMediaList = function() {
+		console.log("checkMediaList called! theType="+window.theType);
+		if( window.theType == "usbAcquire" ) {
+			console.log("checkMediaList:evidenceMediaList == "+evidenceMediaList.length);
+			if( evidenceMediaList.length == 1 ) { 
+				dojo.byId("usbEvidenceFoundDiv").innerHTML = "FOUND!";
+				selectedEvidence = evidenceMediaList[0];
+			} else if ( evidenceMediaList.length > 1 ) { 
+				dojo.byId("usbEvidenceFoundDiv").innerHTML = "==ERROR - TOO MANY!==";
+				selectedEvidence = '';
+			} else if ( evidenceMediaList.length == 0 ) { 
+				dojo.byId("usbEvidenceFoundDiv").innerHTML = "==NONE FOUND==";
+				selectedEvidence = '';
+			} 
+
+			if( writeableMediaList.length == 1 ) { 
+				dojo.byId("usbWriteableFoundDiv").innerHTML = "FOUND!";
+				selectedDestination = writeableMediaList[0];
+			} else if ( writeableMediaList.length > 1 ) { 
+				dojo.byId("usbWriteableFoundDiv").innerHTML = "==ERROR - TOO MANY!==";
+				selectedDestination = '';
+			} else if ( writeableMediaList.length == 0 ) { 
+				dojo.byId("usbWriteableFoundDiv").innerHTML = "==NONE FOUND==";
+				selectedDestination = '';
+			} 
+	
+
+		} else if (theType == "dvdAcquire" ) {
 
 
-	//END ejectAllDrives
+		}
+
+
+	}
 
 
 	} );
