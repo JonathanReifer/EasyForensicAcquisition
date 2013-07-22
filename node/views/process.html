@@ -3,13 +3,23 @@
 
 <% include e4aScript.html %>
 
+<script>
+require(["dojo/domReady!"], function(){
+			console.log("setting state to complete!");
 
- <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="width: 100%;" doLayout="false" class="mmContentPane" data-maq-deltas="{'complete':{'style':[{'display':'none'}]}}"><span style="width: 100%; top: 80px; text-align: center;" class="mainSpan" data-maq-deltas="{'processing':{'style':[{'display':''}]}}">Processing</span></div>
- <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="width: 100%; display: none;" doLayout="false" class="mmContentPane" data-maq-deltas="{'complete':{'style':[{'display':''}]}}" onclick="location.href='e4a_main.html'">
-<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Go back to&lt;br&gt; Main Menu" iconClass="dijitNoIcon" style="top: 70%; position: fixed; right: 15%;" class="mmButton" data-maq-deltas="{'complete':{'style':[{'display':''}]}}"></input>
-<span style="top: 80px; width: 100%; text-align: center;" class="mainSpan" data-maq-deltas="{'complete':{'style':[{'display':''}]}}">Done!</span><span id="resultsFromProcesssing" style="width: 80%; left: 10%; top: 160px;" class="mainSpan" data-maq-deltas="{'complete':{'style':[{'display':''}]}}"></span></div>
+//			davinci.states.setState('complete');
+//			checkStatus();
+} );
+</script>
 
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="width: 100%;" doLayout="false" class="mmContentPane" data-maq-deltas="{'complete':{'style':[{'display':'none'}]}}">
+<span style="width: 100%; top: 80px; text-align: center;" class="mainSpan" >Processing</span>
+</div>
 
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="width: 100%; " doLayout="false" class="mmContentPane" data-maq-deltas="{'progress':{'style':[{'display':'none'}]}}" >
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Go back to&lt;br&gt; Main Menu" iconClass="dijitNoIcon" style="top: 70%; position: fixed; right: 15%;" class="mmButton" data-maq-deltas="{'complete':{'style':[{'display':''}]}}"  onclick="location.href='/'"></input>
+<span style="top: 80px; width: 100%; text-align: center;" class="mainSpan" data-maq-deltas="{'complete':{'style':[{'display':''}]}}">Done!</span><span id="resultsFromProcesssing" style="width: 80%; left: 10%; top: 160px;" class="mainSpan" ></span>
+</div>
 
 
 

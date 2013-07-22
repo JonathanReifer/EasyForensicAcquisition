@@ -35,10 +35,8 @@
 	  });
 
 	  socket.on('processingComplete', function (data) {
-
-			davinci.states.setState('DoneScreen');
+			davinci.states.setState('complete');
 	  });
-
 
 //BEGIN loadEvidenceList
 	var loadEvidenceList = function(theList) {

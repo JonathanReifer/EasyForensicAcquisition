@@ -52,7 +52,10 @@ if(fs.existsSync(writeableMediaLookPath ) ) {
 	writeableMediaList = fs.readdirSync(writeableMediaLookPath );
 }
 
+var currentEvent = ''; 
 var metaData = []; 
+var firstHashArr = []; 
+var secondHashArr = []; 
 
 // Serve the index page
 app.get('/', function(req, res){
@@ -180,6 +183,7 @@ interval = setInterval( function() {
 			}
 			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 
+			console.log("### Calling hashFiles###");
 			hashFiles(data, 'HashEvidence' );	
 
 
@@ -205,6 +209,7 @@ socket.on('checkForDrives', function (data) {
 //BEGIN fileHashingComplete
 //var fileHashingComplete = function(dest, outfileArr, evid, metaData, theOperation) {
 var fileHashingComplete = function( outfileArr, folderHashed, data, theOperation) {
+	console.log("TEST TEST TEST fileHashingComplte CALLED ======\n");
 
 		var outfileData = '';
 		metaData.push( '### Complete Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
@@ -222,7 +227,9 @@ var fileHashingComplete = function( outfileArr, folderHashed, data, theOperation
 //		exec("scripts/unmountAll.sh");
 //		socket.emit('processingComplete', {'outfileName': outfileName} );
 
-		eventEmitter.emit('e4aProcess', data, theOperation  );
+		console.log("#### TEST #### theOperation:"+theOperation);
+//		eventEmitter.emit('e4aProcess', data, theOperation  );
+		e4aProcess(data, theOperation);
 };
 
 
@@ -259,6 +266,7 @@ var burnDVD = function( data ) {
 	var discName = data.selectedEvidence.replace(/^\w+_/,''); 
 	var fullSelectedPath = evidenceMediaPath+'/'+data.selectedEvidence;
 	console.log("burnDVD: discName="+discName+" fullSelectedPath="+fullSelectedPath);
+/*
  	var burnProcess = spawn('growisofs', ['-udf', '-Z', '/dev/sr1', '-V', discName, fullSelectedPath ] );
 
 	burnProcess.stdout.on('data', function(data) {
@@ -271,9 +279,13 @@ var burnDVD = function( data ) {
 
 	burnProcess.on('close', function (code) {
 		console.log('burnProcess child process exited with code ' + code);
-		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
+//		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
+		e4aProcess(data,'BurnDVD');
 	});
-
+*/
+	//temp testing only
+//		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
+	e4aProcess(data,'BurnDVD');
 
 };
 // END burnDVD function
@@ -282,78 +294,76 @@ var burnDVD = function( data ) {
 //var hashFiles = function(data, metaData, theOperation) {
 var hashFiles = function(data, theOperation) {
 
+		console.log("hashFiles function called. theOperation = "+theOperation);
 		var outfileData = [];	
 		var hashProcessStatus = [];
 
 		var sourceName = '';
 		var theFullSourcePath = '';
-
+		
 		if(theOperation == 'HashEvidence' ) {
 			sourceName = data.selectedEvidence.replace(/^\w+_/,''); 
 			theFullSourcePath = evidenceMediaPath+'/'+data.selectedEvidence;
 		} else if (theOperation == 'HashDVD' ) {
 			sourceName = data.selectedEvidence.replace(/^\w+_/,''); 
-			theFullSourcePath = writeableMediaPath+'/'+data.selectedEvidence;
+			theFullSourcePath = writeableMediaPath+'/'+'OPTICAL_'+sourceName;
 		}
 
 		console.log("sourceName="+sourceName+", theFullSourcePath="+theFullSourcePath);
 
 		var fileList;
   	fileList = fs.readdirSync(theFullSourcePath);
-//		walk(evidenceMediaPath+'/'+data.selectedEvidence, function(err, evidenceFileList) {
-//		  if (err) throw err;
-//			exec('find', [ evidenceMediaPath+'/'+data.selectedEvidence ], function(err, stdout, stderr) {
-//			console.log("TEST="+stdout);
-//			evidenceFileList = stdout.split('\n');
-	
+			var readFiles = function( index) {
+				if(index == fileList.length) {
+					fileHashingComplete( outfileData, sourceName, data, theOperation); 
+				} else {
+					var filename = fileList[index];
+					console.log("Calculating Hash Digest for :"+filename);	
 
-			fileList.forEach( function( filename, index ) {
-				console.log("Calculating Hash Digest for :"+filename);	
-				hashProcessStatus[index] = 0;
-				var shasum = crypto.createHash('sha256');
-				var s = fs.ReadStream( theFullSourcePath+'/'+filename);
-//				var s = fs.ReadStream( filename );
-				s.on('data', function(d) {
-					shasum.update(d);
-				});
-				s.on('end', function() {
-					var d = shasum.digest('hex');
-					console.log(d + '  ' + filename);
-					outfileData[index] =  d + '  ' + filename + "\n";
-					hashProcessStatus[index] = 1;
-					if(hashProcessStatus.length == fileList.length ) {
-						var complete=1;
-						hashProcessStatus.forEach( function(hashStatus) {
-							if(hashStatus != 1 ) {
-								complete=0;
-								return;;
-							}
-						} );
-						if(complete == 1) {
-							fileHashingComplete( outfileData, sourceName, data, theOperation); 
-						}
+				var s = fs.readFile( theFullSourcePath+'/'+fileList[index], function(error, data) {
+//					console.log("reading file="+fileList[index]);
+					if( error) {
+						console.log( "ERROR::: Error Reading File. ", error);
+					} else {
+						var shasum = crypto.createHash('sha256');
+						shasum.update(data);
+						var d = shasum.digest('hex');
+//						console.log(d + '  ' + filename);
+						outfileData[index] =  d + '  ' + filename + "\n";
+						
+						readFiles( index + 1);
 					}
 				});
-			} );			
+			}
+			};
+			readFiles(0);		
 
 };
 
 
-eventEmitter.on('e4aProcess',function( data, finishedOp ) {
+//eventEmitter.on('e4aProcess',function( data, finishedOp ) {
+var e4aProcess = function (data, finishedOp) {	
+	// temp
+	data.selectedDestination = 'USB_OutDrive1';
+	if( finishedOp == currentEvent) {
+		return;
+	}
+	currentEvent = finishedOp;
 
 	var opsList = data.requestedOps;
 	if ( finishedOp == 'HashEvidence' ) {
+		console.log("######### calling burnDVD from event handler ######"+finishedOp);
 		burnDVD( data );
 	} else if ( finishedOp == 'BurnDVD' ) { 
-//		hashFiles(data, 'HashDVD');	
+		hashFiles(data, 'HashDVD' );	
 	} else if ( finishedOp == 'HashDVD' ) { 
-
+		verifyHash(data, 'VerifyMatch' );
 	} else if ( finishedOp == 'VerifyMatch' ) { 
 
-
 		var outfileName = moment().format('YYYYMMDD_HHmm');	
-		outfileName = outfileName + '_FileHash_'+evid+'.txt';
-		var outfileFull = writeableMediaPath+'/'+dest+'/'+outfileName;
+		var sourceName = data.selectedEvidence.replace(/^\w+_/,''); 
+		outfileName = outfileName + '_FileHash_'+sourceName+'.txt';
+		var outfileFull = writeableMediaPath+'/'+data.selectedDestination+'/'+outfileName;
 		var outfileData = '';
 		metaData.forEach( function(line,ind) {
 			outfileData += line;
@@ -368,14 +378,43 @@ eventEmitter.on('e4aProcess',function( data, finishedOp ) {
 
 		exec("sync");
 
-
-
-//		socket.emit('processingComplete', {'outfileName': outfileName} );
+		socket.emit('processingComplete', {'outfileName': outfileName} );
 	} 
+} ;
+//END eventEmitter.on e4aProcess
 
-	
 
-} );
+var verifyHash = function(data, theOperation) {
+		data.hashVerified = 0;
+		if(firstHashArr && secondHashArr ) {
+			firstHashArr.forEach( function( fHash, fName) {
+				if( ! secondHashArr[fName] || secondHashArr[fName] != fHash) {
+					data.hashVerified = -1;
+				}
+			} );
+			secondHashArr.forEach( function( fHash, fName) {
+				if( ! firstHashArr[fName] || firstHashArr[fName] != fHash) {
+					data.hashVerified = -2;
+				}
+			} );
+		} else {
+			data.hashVerified = -3;
+		}
+		if(data.hashVerified == 0) {
+			metaData.push( '### Hashes Match ###\n' ) ;	
+		} else if ( data.hashVerified == -1 ) {
+			metaData.push( '### Hashes Do NOT Match - Discrepency in first hash list ###\n' ) ;	
+		} else if ( data.hashVerified == -2 ) {
+			metaData.push( '### Hashes Do NOT Match - Discrepency in second hash list ###\n' ) ;	
+			} else if ( data.hashVerified == -3 ) {
+			metaData.push( '### Hashes Do NOT Match - Did not have two hash sets to compare ###\n' ) ;	
+		}
+
+//		eventEmitter.emit('e4aProcess', data , 'VerifyMatch' );
+		e4aProcess(data, 'VerifyMatch');
+}
+
+
 
 
 
