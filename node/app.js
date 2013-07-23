@@ -29,16 +29,36 @@ app.set('views', __dirname + '/views');
 // This avoids having to provide the 
 // extension to res.render()
 app.set('view engine', 'html');
- 
+
+//READ CONFIG FILE:
+var config;
+var file =  'e4a_config.json'; 
+/*fs.readFile(file, 'utf8', function (err, data) {
+  if (err) {
+    console.log('Error: ' + err);
+    return;
+  }
+});
+*/
+var data = fs.readFileSync(file, 'utf8');
+config = JSON.parse(data);
+console.dir(config);
+
+
+var evidenceMediaPath = config.evidenceMediaPath;
+var writeableMediaPath = config.writeableMediaPath;
+var evidenceMediaLookPath = config.evidenceMediaLookPath;
+var writeableMediaLookPath = config.writeableMediaLookPath;
+
+
+/* 
 var evidenceMediaPath = "../testEvidenceDir";
 var writeableMediaPath = "../testWriteableMediaDir";
 var evidenceMediaLookPath = evidenceMediaPath;
 var writeableMediaLookPath = writeableMediaPath;
 
-/*
 var evidenceMediaPath = "/evidenceMedia";
 var writeableMediaPath = "/writeableMedia";
-
 var evidenceMediaLookPath = "/dev/evidenceDevPart";
 var writeableMediaLookPath = "/dev/writeableDevPart";
 */
@@ -422,7 +442,6 @@ var verifyHash = function(data, theOperation) {
 
 });
 // END SOCKET.IO WRAPPER
-
 
 
 

@@ -1,0 +1,12 @@
+
+
+{
+
+	"evidenceMediaPath"				: "../testEvidenceDir",
+	"writeableMediaPath"			:	"../testWriteableMediaDir",
+	"evidenceMediaLookPath"		:	"../testEvidenceDir",
+	"writeableMediaLookPath"	:	"../testWriteableMediaDir"
+	
+}
+
+
