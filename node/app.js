@@ -181,16 +181,15 @@ interval = setInterval( function() {
 		if(err) {
 //			console.log("ERROR disc check exec failed! "+err);
 		}
+		var oldBlankDvd = blankDvdInserted;
 		if( stdout.indexOf('ID_CDROM_MEDIA_STATE=blank') != -1 ) {
-			if(blankDvdInserted != 1) {
-				socket.emit("blankDvdStateChange", 1);
-			}
 			blankDvdInserted = 1;
 		} else {
-			if(blankDvdInserted != 0) {
-				socket.emit("blankDvdStateChange", 0);
-			}
 			blankDvdInserted = 0;
+		}
+		if(blankDvdInserted != oldBlankDvd) {
+			socket.emit("blankDvdStateChange", blankDvdInserted);
+			console.log("blankDvdStateChangeCalled! blankDvdInserted="+blankDvdInserted);
 		}
 	} );
 	
@@ -396,8 +395,7 @@ var hashFiles = function(data, theOperation) {
 
 //eventEmitter.on('e4aProcess',function( data, finishedOp ) {
 var e4aProcess = function (data, finishedOp) {	
-	// temp
-	data.selectedDestination = 'USB_OutDrive1';
+
 	if( finishedOp == currentEvent) {
 		return;
 	}
