@@ -53,18 +53,6 @@ var evidenceMediaLookPath = config.evidenceMediaLookPath;
 var writeableMediaLookPath = config.writeableMediaLookPath;
 
 
-/* 
-var evidenceMediaPath = "../testEvidenceDir";
-var writeableMediaPath = "../testWriteableMediaDir";
-var evidenceMediaLookPath = evidenceMediaPath;
-var writeableMediaLookPath = writeableMediaPath;
-
-var evidenceMediaPath = "/evidenceMedia";
-var writeableMediaPath = "/writeableMedia";
-var evidenceMediaLookPath = "/dev/evidenceDevPart";
-var writeableMediaLookPath = "/dev/writeableDevPart";
-*/
-
 var evidenceMediaList = []; 
 var writeableMediaList = [];
 if(fs.existsSync(evidenceMediaLookPath) ) { 
@@ -74,6 +62,7 @@ if(fs.existsSync(writeableMediaLookPath ) ) {
 	writeableMediaList = fs.readdirSync(writeableMediaLookPath );
 }
 
+var blankDvdInserted = 0;
 var currentEvent = ''; 
 var metaData = []; 
 var firstHashArr = []; 
@@ -185,6 +174,23 @@ interval = setInterval( function() {
 			socket.emit('writeableMediaList',   writeableMediaList );
 
 	}
+	//CHECK TO SEE IF BLANK DVD INSTALLED
+	exec('/lib/udev/cdrom_id --lock-media '+config.dvdWriteDevice, function(err, stdout, stderr) {
+		if(err) {
+			console.log("ERROR disc check exec failed! "+err);
+		}
+		if( stdout.indexOf('ID_CDROM_MEDIA_STATE=blank') != -1 ) {
+			if(blankDvdInserted != 1) {
+				socket.emit("blankDvdStateChange", 1);
+			}
+			blankDvdInserted = 1;
+		} else {
+			if(blankDvdInserted != 0) {
+				socket.emit("blankDvdStateChange", 0);
+			}
+			blankDvdInserted = 0;
+		}
+	} );
 
 }, 2000);
 
@@ -261,8 +267,8 @@ var burnDVD = function( data ) {
 	var discName = data.selectedEvidence.replace(/^\w+_/,''); 
 	var fullSelectedPath = evidenceMediaPath+'/'+data.selectedEvidence;
 	console.log("burnDVD: discName="+discName+" fullSelectedPath="+fullSelectedPath);
-/*
- 	var burnProcess = spawn('growisofs', ['-udf', '-Z', '/dev/sr1', '-V', discName, fullSelectedPath ] );
+
+ 	var burnProcess = spawn('growisofs', ['-udf', '-Z', config.dvdWriteDevice, '-V', discName, fullSelectedPath ] );
 
 	burnProcess.stdout.on('data', function(data) {
 		console.log('burnProcess stdout: ' + data);
@@ -276,13 +282,13 @@ var burnDVD = function( data ) {
 		console.log('burnProcess child process exited with code ' + code);
 //		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
 		if(code == 0) {
-			setTimeout(e4aProcess,30000, [data,'BurnDVD']);
+			setTimeout(e4aProcess,5000, [data,'BurnDVD']);
 		}
 	});
-*/
+
 	//temp testing only
 //		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
-	e4aProcess(data,'BurnDVD');
+//	e4aProcess(data,'BurnDVD');
 
 };
 // END burnDVD function

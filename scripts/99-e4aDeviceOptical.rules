@@ -1,0 +1,6 @@
+
+#KERNEL=="sd[a-z][1-9]", ENV{THEDEV}="%k",  PROGRAM+="/home/compadmin/EasyForensicAcquisition/scripts/e4aDevNamer.pl %k", SYMLINK+="%c{1}"
+
+KERNEL=="sr[0-1]", ENV{THEDEV}="%k",  PROGRAM+="/home/compadmin/EasyForensicAcquisition/scripts/e4aDevNamerOptical.pl %k $env{FS_ID_LABEL} ", SYMLINK+="%c{1}"
+
+

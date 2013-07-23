@@ -2,6 +2,7 @@
 
 
 use Env qw(THEDEV);
+use Env qw(ID_FS_LABEL);
 
 my $evidenceMediaPath;
 my $writeableMediaPath;
@@ -20,13 +21,19 @@ my $deviceType;
 my $deviceName;
 my $mountName;
 
+if ( defined($ID_FS_LABEL) ) {
+	$deviceName = $ID_FS_LABEL;
+} else {
+	$deviceName = 'UNKNOWN';
+}
+
 if ( defined($THEDEV) ) {
 	$device = '/dev/'.$THEDEV;
 } elsif ( $ARGV[0] ) {
 	$device = '/dev/'.$ARGV[0];
 }
 
-`echo "$device" >/tmp/test.txt`;
+`echo "$deviceName" >/tmp/test3.txt`;
 
 if ( defined($device) ) {
 #if( $ARGV[0] ) {
@@ -44,22 +51,25 @@ if ( defined($device) ) {
 
 	##### IF CD/DVD DETECT IF BLANK ####
 	##### /lib/udev/cdrom_id --lock-media /dev/sr1
+`/lib/udev/cdrom_id --lock-media $device`;
 
 #	if ( $device == '/dev/sr1' ) {
-#		my $disc_details = `/lib/udev/cdrom_id --lock-media /dev/sr1`
-#		my @disc_detailsArr = split('\n', $disc_details);
-#		foreach( @disc_detailsArr) {
-#			if( $_ =~ /ID_CDROM_MEDIA_STATE=blank/ ) {
-#				touch 
+#	my $disc_details = `/lib/udev/cdrom_id --lock-media /dev/sr1`
+#	my @disc_detailsArr = split('\n', $disc_details);
+#	foreach( @disc_detailsArr) {
+#		if( $_ =~ /ID_CDROM_MEDIA=1/ ) {
+#		$deviceName = $1;
 #		}
 #	}
 
-	my $output1 = `/sbin/blkid $device`;
-	if( $output1 =~ /LABEL="(\w+)"/) {
-		$deviceName = $1;
-	} else {
-		$deviceName = "UNKNOWN";
-	}
+#	my $output1 = `/sbin/blkid $device`;
+#	if( $output1 =~ /LABEL="(\w+)"/) {
+#		$deviceName = $1;
+#	} else {
+#		$deviceName = "UNKNOWN";
+#	}
+
+#$deviceName = "OPT";
 	$mountName = $deviceType."_".$deviceName;
 #	print "MOUNT NAME=".$mountName."\n";
 

@@ -14,6 +14,8 @@
 		var evidenceButtonList = [];
 		var writeableButtonList = [];
 
+		var blankDvdInserted = 0;
+
 		if( ! window.theType ) {
 			window.theType = "";
 		}
@@ -33,6 +35,14 @@
 //			loadWriteableList(writeableMediaList);
 			checkMediaList();
 	  });
+
+	  socket.on('blankDvdStateChange', function (data) {
+	    console.log("new blankDvdStateChange emitted" );
+			blankDvdInserted = data;
+			checkMediaList();
+	  });
+
+
 
 	  socket.on('processingComplete', function (data) {
 			davinci.states.setState('complete');
@@ -194,7 +204,12 @@
 				dojo.byId("usbWriteableFoundDiv").innerHTML = "==NONE FOUND==";
 				selectedDestination = '';
 			} 
-	
+
+			if( blankDvdInserted == 1 ) { 
+				dojo.byId("blankDiscFoundDiv").innerHTML = "FOUND!";
+			} else  { 
+				dojo.byId("blankDiscFoundDiv").innerHTML = "==NONE FOUND==";
+			}
 
 		} else if (theType == "dvdAcquire" ) {
 
