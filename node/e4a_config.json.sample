@@ -5,7 +5,21 @@
 	"evidenceMediaPath"				: "../testEvidenceDir",
 	"writeableMediaPath"			:	"../testWriteableMediaDir",
 	"evidenceMediaLookPath"		:	"../testEvidenceDir",
-	"writeableMediaLookPath"	:	"../testWriteableMediaDir"
+	"writeableMediaLookPath"	:	"../testWriteableMediaDir",
+
+	"dvdWriteDevice"					:	"/dev/dvd",
+	"UsbEvidenceDeviceArr"		:	[ 
+		"usb1\/1-5"
+	],
+	"OpticalEvidenceDeviceArr"	:	[
+		"someDev"
+	],	
+	"UsbWriteableDeviceArr"		:	[ 
+		"usb1\/1-5"
+	],
+	"OpticalWriteableDeviceArr"	:	[
+		"someDev"
+	]	
 	
 }
 
