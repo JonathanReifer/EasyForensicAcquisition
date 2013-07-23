@@ -80,20 +80,17 @@ app.get('/', function(req, res){
 
 // Serve the selectEvidence page
 app.get('/usbAcquire.html', function(req, res){
-
-/*
-	if(fs.existsSync(evidenceMediaLookPath ) ) {
-		evidenceMediaList = fs.readdirSync( evidenceMediaLookPath  );
-	}
-	evidenceMediaList.forEach( function(u, i) {
-			console.log(u);
-	} );
-*/
   res.render('usbAcquire', {
-    pageTitle: 'Easy Forensic Acquisition',
     evidenceMediaList: evidenceMediaList
   });
 });
+
+app.get('/opticalAcquire.html', function(req, res){
+  res.render('opticalAcquire', {
+    evidenceMediaList: evidenceMediaList
+  });
+});
+
 
 app.get('/process.html', function(req, res){
   res.render('process', {

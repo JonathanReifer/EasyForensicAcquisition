@@ -120,7 +120,7 @@
 
 		var userMeta = {};
 		
-		if( window.theType == "usbAcquire" ) {
+		if( window.theType == "usbAcquire" || window.theType == "opticalAcquire" ) {
 			var caseNum = dojo.byId("meta_casenum");
 			if(caseNum) {
 				userMeta['Case #'] = caseNum.value;
@@ -158,6 +158,16 @@
 	};	
 	//END usbAcquire
 
+	//BEGIN opticalAcquire
+	opticalAcquire = function() {
+		console.log("Ejecting Drives");
+	  socket.emit('ejectDrives', { } );
+		document.location="opticalAcquire.html";
+	};	
+	//END opticalAcquire
+
+
+
 	//BEGIN checkForDrives
 	checkForDrives = function() {
 	  socket.emit('checkForDrives', { } );
@@ -181,19 +191,7 @@
 	
 	checkMediaList = function() {
 		console.log("checkMediaList called! theType="+window.theType);
-		if( window.theType == "usbAcquire" ) {
-			console.log("checkMediaList:evidenceMediaList == "+evidenceMediaList.length);
-			if( evidenceMediaList.length == 1 ) { 
-				dojo.byId("usbEvidenceFoundDiv").innerHTML = "FOUND!";
-				selectedEvidence = evidenceMediaList[0];
-			} else if ( evidenceMediaList.length > 1 ) { 
-				dojo.byId("usbEvidenceFoundDiv").innerHTML = "==ERROR - TOO MANY!==";
-				selectedEvidence = '';
-			} else if ( evidenceMediaList.length == 0 ) { 
-				dojo.byId("usbEvidenceFoundDiv").innerHTML = "==NONE FOUND==";
-				selectedEvidence = '';
-			} 
-
+		if( window.theType == "usbAcquire" || window.theType == "opticalAcquire" ) {
 			if( writeableMediaList.length == 1 ) { 
 				dojo.byId("usbWriteableFoundDiv").innerHTML = "FOUND!";
 				selectedDestination = writeableMediaList[0];
@@ -211,10 +209,34 @@
 				dojo.byId("blankDiscFoundDiv").innerHTML = "==NONE FOUND==";
 			}
 
-		} else if (theType == "dvdAcquire" ) {
-
-
 		}
+		if (theType == "usbAcquire" ) {
+			console.log("checkMediaList:evidenceMediaList == "+evidenceMediaList.length);
+			if( evidenceMediaList.length == 1 ) { 
+				dojo.byId("usbEvidenceFoundDiv").innerHTML = "FOUND!";
+				selectedEvidence = evidenceMediaList[0];
+			} else if ( evidenceMediaList.length > 1 ) { 
+				dojo.byId("usbEvidenceFoundDiv").innerHTML = "==ERROR - TOO MANY!==";
+				selectedEvidence = '';
+			} else if ( evidenceMediaList.length == 0 ) { 
+				dojo.byId("usbEvidenceFoundDiv").innerHTML = "==NONE FOUND==";
+				selectedEvidence = '';
+			} 
+		}
+		if (theType == "opticalAcquire" ) {
+			console.log("checkMediaList:evidenceMediaList == "+evidenceMediaList.length);
+			if( evidenceMediaList.length == 1 ) { 
+				dojo.byId("theEvidenceFoundDiv").innerHTML = "FOUND!";
+				selectedEvidence = evidenceMediaList[0];
+			} else if ( evidenceMediaList.length > 1 ) { 
+				dojo.byId("theEvidenceFoundDiv").innerHTML = "==ERROR - TOO MANY!==";
+				selectedEvidence = '';
+			} else if ( evidenceMediaList.length == 0 ) { 
+				dojo.byId("theEvidenceFoundDiv").innerHTML = "==NONE FOUND==";
+				selectedEvidence = '';
+			} 
+		}
+
 
 
 	}
