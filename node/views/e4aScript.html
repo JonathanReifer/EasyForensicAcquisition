@@ -166,6 +166,14 @@
 	};	
 	//END opticalAcquire
 
+	//BEGIN checkStatus
+	checkStatus = function() {
+	  socket.emit('checkStatus', { } );
+	}
+	//END checkStatus
+	if(window.theType == "processPage" ) {
+		checkStatus();
+	}
 
 
 	//BEGIN checkForDrives

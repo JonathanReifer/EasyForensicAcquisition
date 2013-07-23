@@ -234,19 +234,30 @@ socket.on('ejectDrives', function (data) {
 } );
 //END ejectDrives
 
-//BEGIN ejectDrives
+//BEGIN checkForDrives
 socket.on('checkForDrives', function (data) {
 	console.log("checkForDrives called!");
-	
 
 } );
-//END ejectDrives
+//END checkForDrives
 
+//BEGIN checkStatus
+socket.on('checkStatus', function (data) {
+	console.log("checkStatus called!");
+
+
+		var outfileName = 'test';
+		socket.emit('processingComplete', {'outfileName': outfileName} );
+} );
+//END checkStatus
 
 //BEGIN fileHashingComplete
 //var fileHashingComplete = function(dest, outfileArr, evid, metaData, theOperation) {
 var fileHashingComplete = function( outfileArr, folderHashed, data, theOperation) {
-	console.log("TEST TEST TEST fileHashingComplte CALLED ======\n");
+//	console.log("TEST TEST TEST fileHashingComplte CALLED ======\n");
+//		var outfileName = 'test';
+//		socket.emit('processingComplete', {'outfileName': outfileName} );
+	// TESTING ONLY TO REMOVE
 
 		var outfileData = '';
 		metaData.push( '### Complete Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
