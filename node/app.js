@@ -16,6 +16,8 @@ var moment = require('moment');
 
 var spawn = require('child_process').spawn;
 
+var walk = require('walk');
+
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
  
@@ -253,33 +255,6 @@ var fileHashingComplete = function( outfileArr, folderHashed, data, theOperation
 };
 
 
-
-// BEGIN walk function
-var walk = function(dir, done) {
-  var results = [];
-  fs.readdir(dir, function(err, list) {
-    if (err) return done(err);
-    var i = 0;
-    (function next() {
-      var file = list[i++];
-      if (!file) return done(null, results);
-      file = dir + '/' + file;
-      fs.stat(file, function(err, stat) {
-        if (stat && stat.isDirectory()) {
-          walk(file, function(err, res) {
-            results = results.concat(res);
-            next();
-          });
-        } else {
-          results.push(file);
-          next();
-        }
-      });
-    })();
-  });
-};
-// END walk function
-
 // BEGIN burnDVD function
 var burnDVD = function( data ) {
 
@@ -333,7 +308,42 @@ var hashFiles = function(data, theOperation) {
 
 		console.log("sourceName="+sourceName+", theFullSourcePath="+theFullSourcePath);
 
-		var fileList;
+		var fileList =[];
+		var walker  = walk.walk(theFullSourcePath, { followLinks: false });
+		walker.on('file', function(root, stat, next) {
+			var basePath = root.replace(theFullSourcePath,'');
+	    // Add this file to the list of files
+			var filename;
+			if(basePath != '') {
+//		    fileList.push(basePath + '/' + stat.name);
+				filename = basePath.substr(1) + '/' +stat.name;
+			} else {
+//		    fileList.push( stat.name);
+				filename = stat.name;
+			}
+			fs.readFile(root+'/'+stat.name, function (error, data) {
+				var shasum = crypto.createHash('sha256');
+				shasum.update(data);
+				var d = shasum.digest('hex');
+				console.log(d + '  ' + filename);
+				outfileData.push( d + '  ' + filename + "\n" );
+	    	next();
+			});
+		});	
+		walker.on('end', function() {
+			fileList.forEach(function( filename, index ) {
+						console.log("filename======"+filename);
+/*						var shasum = crypto.createHash('sha256');
+						shasum.update(data);
+						var d = shasum.digest('hex');
+						console.log(d + '  ' + filename);
+						outfileData[index] =  d + '  ' + filename + "\n";
+*/			} );
+			fileHashingComplete( outfileData, sourceName, data, theOperation); 
+			
+		});	
+
+/*
   	fileList = fs.readdirSync(theFullSourcePath);
 			var readFiles = function( index) {
 				if(index == fileList.length) {
@@ -344,6 +354,7 @@ var hashFiles = function(data, theOperation) {
 
 				var s = fs.readFile( theFullSourcePath+'/'+fileList[index], function(error, data) {
 //					console.log("reading file="+fileList[index]);
+
 					if( error) {
 						console.log( "ERROR::: Error Reading File. ", error);
 					} else {
@@ -359,9 +370,10 @@ var hashFiles = function(data, theOperation) {
 			}
 			};
 			readFiles(0);		
+*/
 
 };
-
+// END hashFiles
 
 //eventEmitter.on('e4aProcess',function( data, finishedOp ) {
 var e4aProcess = function (data, finishedOp) {	
