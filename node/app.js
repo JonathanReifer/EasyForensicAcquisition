@@ -63,6 +63,8 @@ if(fs.existsSync(writeableMediaLookPath ) ) {
 }
 
 var blankDvdInserted = 0;
+var lookForDiscToHash = '';
+var dataToSend;;
 var currentEvent = ''; 
 var metaData = []; 
 var firstHashArr = []; 
@@ -177,7 +179,7 @@ interval = setInterval( function() {
 	//CHECK TO SEE IF BLANK DVD INSTALLED
 	exec('/lib/udev/cdrom_id --lock-media '+config.dvdWriteDevice, function(err, stdout, stderr) {
 		if(err) {
-			console.log("ERROR disc check exec failed! "+err);
+//			console.log("ERROR disc check exec failed! "+err);
 		}
 		if( stdout.indexOf('ID_CDROM_MEDIA_STATE=blank') != -1 ) {
 			if(blankDvdInserted != 1) {
@@ -191,6 +193,17 @@ interval = setInterval( function() {
 			blankDvdInserted = 0;
 		}
 	} );
+	
+	//LOOK FOR DISC TO HASH (THIS IS FOR DISC THAT WAS JUST BURNED )
+	if( lookForDiscToHash != '')  {
+		writeableMediaList.forEach( function( theFile) {
+			if( theFile == lookForDiscToHash ) {
+				lookForDiscToHash = '';
+				hashFiles(dataToSend, 'HashDVD' );	
+				
+			}
+		} );
+	}
 
 }, 2000);
 
@@ -282,7 +295,7 @@ var burnDVD = function( data ) {
 		console.log('burnProcess child process exited with code ' + code);
 //		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
 		if(code == 0) {
-			setTimeout(e4aProcess,5000, [data,'BurnDVD']);
+			e4aProcess( data,'BurnDVD');
 		}
 	});
 
@@ -393,9 +406,12 @@ var e4aProcess = function (data, finishedOp) {
 	var opsList = data.requestedOps;
 	if ( finishedOp == 'HashEvidence' ) {
 		console.log("######### calling burnDVD from event handler ######"+finishedOp);
+	
 		burnDVD( data );
 	} else if ( finishedOp == 'BurnDVD' ) { 
-		hashFiles(data, 'HashDVD' );	
+		dataToSend = data;
+		lookForDiscToHash = 'OPTICAL_'+data.selectedEvidence.replace(/^\w+_/,'');	
+//		hashFiles(data, 'HashDVD' );	
 	} else if ( finishedOp == 'HashDVD' ) { 
 		verifyHash(data, 'VerifyMatch' );
 	} else if ( finishedOp == 'VerifyMatch' ) { 
