@@ -46,6 +46,13 @@ var data = fs.readFileSync(file, 'utf8');
 config = JSON.parse(data);
 console.dir(config);
 
+var globalStatus = {
+	totalSteps:0,
+	currentStep:-1,
+	percentDone:0,
+	taskType:''
+};
+
 
 var evidenceMediaPath = config.evidenceMediaPath;
 var writeableMediaPath = config.writeableMediaPath;
@@ -201,6 +208,18 @@ interval = setInterval( function() {
 		} );
 	}
 
+	// STATUS CHECKS :
+	if ( globalStatus.totalSteps > 0 ) {
+		if ( globalStatus.currentStep < globalStatus.totalSteps ) {
+			globalStatus.percentDone++;
+			socket.emit('statusUpdate', globalStatus );
+		} else {
+					
+
+		}
+	}
+
+
 }, 2000);
 
 
@@ -221,6 +240,12 @@ interval = setInterval( function() {
 			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 
 			console.log("### Calling hashFiles###");
+
+			globalStatus.totalSteps = data.requestedOps.length;
+			globalStatus.currentStep = 1;
+			globalStatus.percentDone = 0;
+			globalStatus.taskType = 'Full';
+
 			hashFiles(data, 'HashEvidence' );	
 
 
@@ -245,9 +270,10 @@ socket.on('checkForDrives', function (data) {
 socket.on('checkStatus', function (data) {
 	console.log("checkStatus called!");
 
+		socket.emit('statusUpdate', globalStatus );
 
 		var outfileName = 'test';
-		socket.emit('processingComplete', {'outfileName': outfileName} );
+//		socket.emit('processingComplete', {'outfileName': outfileName} );
 } );
 //END checkStatus
 
@@ -440,6 +466,8 @@ var e4aProcess = function (data, finishedOp) {
 
 		exec("sync");
 
+		globalStatus.totalSteps = 0;
+		globalStatus.currentStep = -1;
 		socket.emit('processingComplete', {'outfileName': outfileName} );
 	} 
 } ;

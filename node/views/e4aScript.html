@@ -42,7 +42,18 @@
 			checkMediaList();
 	  });
 
+	  socket.on('statusUpdate', function (data) {
+			console.log("statusUpdate called:");
+			if( data.percentDone != null) {
+				console.log("percentDone = "+data.percentDone);
+				var progressBar = dijit.byId("statusProgressBarDiv");
+				if(progressBar) {
+					progressBar.update( { maximum: 100, progress: data.percentDone} );
+				}
+			}
 
+
+	  });
 
 	  socket.on('processingComplete', function (data) {
 			davinci.states.setState('complete');
