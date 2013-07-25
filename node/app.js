@@ -20,6 +20,8 @@ var walk = require('walk');
 
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
+
+var path = require('path');
  
 // Using the .html extension instead of
 // having to name the views as *.ejs
@@ -42,7 +44,7 @@ var file =  'e4a_config.json';
   }
 });
 */
-var data = fs.readFileSync(file, 'utf8');
+var data = fs.readFileSync( path.resolve(__dirname, file), 'utf8');
 config = JSON.parse(data);
 console.dir(config);
 
@@ -109,7 +111,7 @@ app.get('/process.html', function(req, res){
 
 
 
-app.use(express.static("../E4A") );
+app.use(express.static( path.resolve(__dirname, "../E4A" ) ) );
  
 if (!module.parent) {
   server.listen(8888);
