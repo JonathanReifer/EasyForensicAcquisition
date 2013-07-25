@@ -160,6 +160,7 @@ child.stderr.on('data', function(data) {
 var interval;
 
 io.sockets.on('connection', function (socket) {
+clearInterval(interval);
 socket.emit('evidenceMediaList',   evidenceMediaList );
 socket.emit('writeableMediaList',   writeableMediaList );
 socket.emit("blankDvdStateChange", blankDvdInserted);
