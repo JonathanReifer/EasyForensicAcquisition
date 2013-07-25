@@ -1,0 +1,19 @@
+
+<% include header.html %>
+
+<script>
+	window.theType = "errorPage";
+</script>
+
+<% include e4aScript.html %>
+
+ <div data-dojo-type="dijit/layout/ContentPane" title="Pane" extractContent="false" preventCache="false" preload="false" refreshOnShow="false" style="width: 100%; " doLayout="false" class="mmContentPane" >
+<input type="button" data-dojo-type="dijit/form/Button" intermediateChanges="false" label="Go back to&lt;br&gt; Main Menu" iconClass="dijitNoIcon" style="top: 70%; position: fixed; right: 15%;" class="mmButton" data-maq-deltas="{'complete':{'style':[{'display':''}]}}"  onclick="location.href='/'"></input>
+<span style="top: 80px; width: 100%; text-align: center;" class="mainSpan" data-maq-deltas="{'complete':{'style':[{'display':''}]}}">Well, shit.<br>Some kind of error happened.<br>Go back to the begining and try again.</span><span id="resultsFromProcesssing" style="width: 80%; left: 10%; top: 160px;" class="mainSpan" ></span>
+</div>
+
+
+
+
+<% include footer.html %>
+

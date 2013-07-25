@@ -52,7 +52,10 @@ var globalStatus = {
 	totalSteps:0,
 	currentStep:-1,
 	percentDone:0,
-	taskType:''
+	taskType:'',
+	staticStatusInfo : {},
+	dynamicStatusInfo : {}
+
 };
 
 
@@ -81,6 +84,13 @@ var secondHashArr = [];
 
 // Serve the index page
 app.get('/', function(req, res){
+	globalStatus.totalSteps=0;
+	globalStatus.currentStep=-1;
+	globalStatus.percentDone=0;
+	globalStatus.taskType='';
+	globalStatus.staticStatusInfo={};
+	globalStatus.dynamicStatusInfo = {};
+
   res.render('index', {
     pageTitle: 'Easy Forensic Acquisition',
     evidenceMediaList: evidenceMediaList
@@ -107,6 +117,12 @@ app.get('/process.html', function(req, res){
     evidenceMediaList: evidenceMediaList
   });
 });
+
+app.get('/error.html', function(req, res){
+  res.render('error', {
+  });
+});
+
 
 
 
@@ -213,7 +229,7 @@ interval = setInterval( function() {
 	// STATUS CHECKS :
 	if ( globalStatus.totalSteps > 0 ) {
 		if ( globalStatus.currentStep < globalStatus.totalSteps ) {
-			globalStatus.percentDone++;
+//			globalStatus.percentDone++;
 			socket.emit('statusUpdate', globalStatus );
 		} else {
 					
@@ -251,15 +267,28 @@ interval = setInterval( function() {
 			hashFiles(data, 'HashEvidence' );	
 
 
-//		} ); 
   });
 
 //BEGIN ejectDrives
 socket.on('ejectDrives', function (data) {
 	console.log("ejectDrives called!");
-
+	ejectDrives();
 } );
 //END ejectDrives
+
+
+var ejectDrives = function() {
+	if(config) {
+		if(config.dvdEvidenceDevice) {
+			exec("eject "+config.dvdEvidenceDevice);
+		}
+		if(config.dvdWriteDevice) {
+			exec("eject "+config.dvdWriteDevice);
+		}
+	}
+
+};
+
 
 //BEGIN checkForDrives
 socket.on('checkForDrives', function (data) {
@@ -280,7 +309,6 @@ socket.on('checkStatus', function (data) {
 //END checkStatus
 
 //BEGIN fileHashingComplete
-//var fileHashingComplete = function(dest, outfileArr, evid, metaData, theOperation) {
 var fileHashingComplete = function( outfileArr, folderHashed, data, theOperation) {
 //	console.log("TEST TEST TEST fileHashingComplte CALLED ======\n");
 //		var outfileName = 'test';
@@ -331,6 +359,9 @@ var burnDVD = function( data ) {
 //		eventEmitter.emit('e4aProcess', data , 'BurnDVD' );
 		if(code == 0) {
 			e4aProcess( data,'BurnDVD');
+		} else if( code == 252 ) {
+  		console.log('Caught exception: ' + err);
+			socket.emit("errorCaught", err);	
 		}
 	});
 
@@ -342,7 +373,6 @@ var burnDVD = function( data ) {
 // END burnDVD function
 
 
-//var hashFiles = function(data, metaData, theOperation) {
 var hashFiles = function(data, theOperation) {
 
 		console.log("hashFiles function called. theOperation = "+theOperation);
@@ -429,13 +459,23 @@ var hashFiles = function(data, theOperation) {
 };
 // END hashFiles
 
-//eventEmitter.on('e4aProcess',function( data, finishedOp ) {
 var e4aProcess = function (data, finishedOp) {	
 
 	if( finishedOp == currentEvent) {
 		return;
 	}
 	currentEvent = finishedOp;
+
+		var outfileName = moment().format('YYYYMMDD_HHmm');	
+		var sourceName = data.selectedEvidence.replace(/^\w+_/,''); 
+		outfileName = outfileName + '_FileHash_'+sourceName+'.txt';
+		globalStatus.staticStatusInfo['Selected Input (Evidence) Drive'] = data.selectedEvidence;
+		globalStatus.staticStatusInfo['Hash Report File'] = outfileName;
+		globalStatus.staticStatusInfo['Selected Drive for Report File'] = data.selectedDestination;
+
+	globalStatus.currentStep++;
+	globalStatus.percentDone = ( globalStatus.currentStep/globalStatus.totalSteps ) * 100;
+	globalStatus.dynamicStatusInfo['Processing Step'] = globalStatus.currentStep+" / "+globalStatus.totalSteps;
 
 	var opsList = data.requestedOps;
 	if ( finishedOp == 'HashEvidence' ) {
@@ -450,9 +490,10 @@ var e4aProcess = function (data, finishedOp) {
 		verifyHash(data, 'VerifyMatch' );
 	} else if ( finishedOp == 'VerifyMatch' ) { 
 
-		var outfileName = moment().format('YYYYMMDD_HHmm');	
-		var sourceName = data.selectedEvidence.replace(/^\w+_/,''); 
-		outfileName = outfileName + '_FileHash_'+sourceName+'.txt';
+//		var outfileName = moment().format('YYYYMMDD_HHmm');	
+//		var sourceName = data.selectedEvidence.replace(/^\w+_/,''); 
+//		outfileName = outfileName + '_FileHash_'+sourceName+'.txt';
+//		globalStatus.staticStatusInfo['Hash Report File'] = outfileName;
 		var outfileFull = writeableMediaPath+'/'+data.selectedDestination+'/'+outfileName;
 		var outfileData = '';
 		metaData.forEach( function(line,ind) {
@@ -471,6 +512,8 @@ var e4aProcess = function (data, finishedOp) {
 		globalStatus.totalSteps = 0;
 		globalStatus.currentStep = -1;
 		socket.emit('processingComplete', {'outfileName': outfileName} );
+		ejectDrives();
+		
 	} 
 } ;
 //END eventEmitter.on e4aProcess
@@ -507,11 +550,19 @@ var verifyHash = function(data, theOperation) {
 }
 
 
+// unhandled Exceptions go here :
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err);
+	socket.emit("errorCaught", err);	
+});
+
 
 
 
 });
 // END SOCKET.IO WRAPPER
+
+
 
 
 

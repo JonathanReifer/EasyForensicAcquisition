@@ -21,6 +21,13 @@
 		}
 	
 		var socket = io.connect('http://localhost:8888');
+
+	  socket.on('uncaughtException', function (data) {
+	    console.log("Uncaught Exception Caught" );
+			document.location="error.html";
+
+	  });
+
 	  socket.on('evidenceMediaList', function (data) {
 	    console.log("new evidenceMediaList emitted" );
 			evidenceMediaList = data.slice();
@@ -50,6 +57,19 @@
 				if(progressBar) {
 					progressBar.update( { maximum: 100, progress: data.percentDone} );
 				}
+				if( data.staticStatusInfo ) {
+					dojo.byId("staticStatusId").innerHTML = ""; 
+					for(var key in data.staticStatusInfo) {
+						dojo.byId("staticStatusId").innerHTML += key+" : "+data.staticStatusInfo[key]+"<br>";
+					}
+				} 
+				if ( data.dynamicStatusInfo ) {
+					dojo.byId("dynamicStatusId").innerHTML = ""; 
+					for(var key in data.dynamicStatusInfo) {
+						dojo.byId("dynamicStatusId").innerHTML += key+" : "+data.dynamicStatusInfo[key]+"<br>";
+					}
+				}
+
 			}
 
 
