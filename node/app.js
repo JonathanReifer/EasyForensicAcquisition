@@ -162,6 +162,7 @@ var interval;
 io.sockets.on('connection', function (socket) {
 socket.emit('evidenceMediaList',   evidenceMediaList );
 socket.emit('writeableMediaList',   writeableMediaList );
+socket.emit("blankDvdStateChange", blankDvdInserted);
 
 interval = setInterval( function() {
 	var oldEMList = evidenceMediaList.slice();
@@ -293,6 +294,9 @@ var ejectDrives = function() {
 //BEGIN checkForDrives
 socket.on('checkForDrives', function (data) {
 	console.log("checkForDrives called!");
+	socket.emit('evidenceMediaList',   evidenceMediaList );
+	socket.emit('writeableMediaList',   writeableMediaList );
+	socket.emit("blankDvdStateChange", blankDvdInserted);
 
 } );
 //END checkForDrives
