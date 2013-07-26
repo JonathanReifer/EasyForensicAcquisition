@@ -492,8 +492,11 @@ var e4aProcess = function (data, finishedOp) {
 	var opsList = data.requestedOps;
 	if ( finishedOp == 'HashEvidence' ) {
 		console.log("######### calling burnDVD from event handler ######"+finishedOp);
-	
+
+//TESTING BEGIN	
 		burnDVD( data );
+//		e4aProcess(data, 'BurnDVD');
+//TESTING END
 
 	} else if ( finishedOp == 'BurnDVD' ) { 
 		dataToSend = data;
@@ -522,9 +525,10 @@ var e4aProcess = function (data, finishedOp) {
 
 		exec("sync");
 
+		delete globalStatus.dynamicStatusInfo['Processing Step'];
 		globalStatus.totalSteps = 0;
 		globalStatus.currentStep = -1;
-		socket.emit('processingComplete', {'outfileName': outfileName} );
+		socket.emit('processingComplete', globalStatus );
 		ejectDrives();
 		
 	} 
@@ -550,15 +554,20 @@ var verifyHash = function(data, theOperation) {
 		} else {
 			data.hashVerified = -3;
 		}
+		var resultStr = "";
 		if(data.hashVerified == 0) {
-			metaData.push( '### Hashes Match ###\n' ) ;	
+			resultStr = '### Hashes Match ###\n';	
 		} else if ( data.hashVerified == -1 ) {
-			metaData.push( '### Hashes Do NOT Match - Discrepency in first hash list ###\n' ) ;	
+			resultStr = '### Hashes Do NOT Match - Discrepency in first hash list ###\n' ;	
 		} else if ( data.hashVerified == -2 ) {
-			metaData.push( '### Hashes Do NOT Match - Discrepency in second hash list ###\n' ) ;	
-			} else if ( data.hashVerified == -3 ) {
-			metaData.push( '### Hashes Do NOT Match - Did not have two hash sets to compare ###\n' ) ;	
+			resultStr = '### Hashes Do NOT Match - Discrepency in second hash list ###\n' ;	
+		} else if ( data.hashVerified == -3 ) {
+			resultStr = '### Hashes Do NOT Match - Did not have two hash sets to compare ###\n' ;	
 		}
+		metaData.push(resultStr);	
+		globalStatus.dynamicStatusInfo['Hash Comparison'] = resultStr; 
+			
+
 		console.log("#### VERIFY HASH COMPLETE. RESULT="+data.hashVerified+" ####");
 //		eventEmitter.emit('e4aProcess', data , 'VerifyMatch' );
 		e4aProcess(data, 'VerifyMatch');
@@ -568,7 +577,7 @@ var verifyHash = function(data, theOperation) {
 // unhandled Exceptions go here :
 process.on('uncaughtException', function(err) {
   console.log('Caught exception: ' + err);
-	socket.emit("errorCaught", err);	
+	socket.emit("caughtError", err);	
 });
 
 

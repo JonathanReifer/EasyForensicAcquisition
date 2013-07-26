@@ -22,7 +22,7 @@
 	
 		var socket = io.connect('http://localhost:8888');
 
-	  socket.on('uncaughtException', function (data) {
+	  socket.on('caughtError', function (data) {
 	    console.log("Uncaught Exception Caught" );
 			document.location="error.html";
 
@@ -76,6 +76,19 @@
 	  });
 
 	  socket.on('processingComplete', function (data) {
+				if( data.staticStatusInfo ) {
+					dojo.byId("staticResultsId").innerHTML = ""; 
+					for(var key in data.staticStatusInfo) {
+						dojo.byId("staticResultsId").innerHTML += key+" : "+data.staticStatusInfo[key]+"<br>";
+					}
+				} 
+				if ( data.dynamicStatusInfo ) {
+					dojo.byId("dynamicResultsId").innerHTML = ""; 
+					for(var key in data.dynamicStatusInfo) {
+						dojo.byId("dynamicResultsId").innerHTML += key+" : "+data.dynamicStatusInfo[key]+"<br>";
+					}
+				}
+
 			davinci.states.setState('complete');
 	  });
 
