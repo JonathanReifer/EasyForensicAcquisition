@@ -58,7 +58,7 @@ var globalStatus = {
 
 };
 
-
+var e4aVersion = '1.0';
 var evidenceMediaPath = config.evidenceMediaPath;
 var writeableMediaPath = config.writeableMediaPath;
 var evidenceMediaLookPath = config.evidenceMediaLookPath;
@@ -79,8 +79,8 @@ var lookForDiscToHash = '';
 var dataToSend;;
 var currentEvent = ''; 
 var metaData = []; 
-var firstHashArr = []; 
-var secondHashArr = []; 
+var firstHashArr = {}; 
+var secondHashArr = {}; 
 
 // Serve the index page
 app.get('/', function(req, res){
@@ -257,14 +257,13 @@ interval = setInterval( function() {
 					metaData.push( prefix+data.userMeta[key]+'\n');
 				} 
 			}
-			metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 
 			console.log("### Calling hashFiles###");
 
 			globalStatus.totalSteps = data.requestedOps.length;
 			globalStatus.currentStep = 1;
 			globalStatus.percentDone = 0;
-			globalStatus.taskType = 'Full';
+			globalStatus.taskType = data.taskType;
 
 			hashFiles(data, 'HashEvidence' );	
 
@@ -380,6 +379,8 @@ var burnDVD = function( data ) {
 
 var hashFiles = function(data, theOperation) {
 
+
+		metaData.push( '### Starting Hash Computation at '+moment().format('YYYY-MM-DD HH:mm:ss')+'.\n' ) ;	
 		console.log("hashFiles function called. theOperation = "+theOperation);
 		var outfileData = [];	
 		var hashProcessStatus = [];
@@ -416,6 +417,12 @@ var hashFiles = function(data, theOperation) {
 				var d = shasum.digest('hex');
 				console.log(d + '  ' + filename);
 				outfileData.push( d + '  ' + filename + "\n" );
+				if(theOperation == 'HashEvidence' ) {
+					firstHashArr[filename] = d;
+				} else {
+					secondHashArr[filename] = d;
+				}
+
 	    	next();
 			});
 		});	
@@ -487,6 +494,7 @@ var e4aProcess = function (data, finishedOp) {
 		console.log("######### calling burnDVD from event handler ######"+finishedOp);
 	
 		burnDVD( data );
+
 	} else if ( finishedOp == 'BurnDVD' ) { 
 		dataToSend = data;
 		lookForDiscToHash = 'OPTICAL_'+data.selectedEvidence.replace(/^\w+_/,'');	
@@ -525,18 +533,20 @@ var e4aProcess = function (data, finishedOp) {
 
 
 var verifyHash = function(data, theOperation) {
+		console.log("#### VERIFY HASHES CALLED ####");
 		data.hashVerified = 0;
 		if(firstHashArr && secondHashArr ) {
-			firstHashArr.forEach( function( fHash, fName) {
-				if( ! secondHashArr[fName] || secondHashArr[fName] != fHash) {
+			for (var fName in firstHashArr) {
+//				console.log("Comparing Hash: "+fName+"\n"+firstHashArr[fName]+"\n"+secondHashArr[fName] );
+				if( ! secondHashArr[fName] || secondHashArr[fName] != firstHashArr[fName] ) {
 					data.hashVerified = -1;
 				}
-			} );
-			secondHashArr.forEach( function( fHash, fName) {
-				if( ! firstHashArr[fName] || firstHashArr[fName] != fHash) {
+			}
+			for (var fName in secondHashArr) {
+				if( ! firstHashArr[fName] || firstHashArr[fName] != secondHashArr[fName] ) {
 					data.hashVerified = -2;
 				}
-			} );
+			}
 		} else {
 			data.hashVerified = -3;
 		}
@@ -549,7 +559,7 @@ var verifyHash = function(data, theOperation) {
 			} else if ( data.hashVerified == -3 ) {
 			metaData.push( '### Hashes Do NOT Match - Did not have two hash sets to compare ###\n' ) ;	
 		}
-
+		console.log("#### VERIFY HASH COMPLETE. RESULT="+data.hashVerified+" ####");
 //		eventEmitter.emit('e4aProcess', data , 'VerifyMatch' );
 		e4aProcess(data, 'VerifyMatch');
 }
@@ -564,7 +574,7 @@ process.on('uncaughtException', function(err) {
 
 
 
-});
+} );
 // END SOCKET.IO WRAPPER
 
 
